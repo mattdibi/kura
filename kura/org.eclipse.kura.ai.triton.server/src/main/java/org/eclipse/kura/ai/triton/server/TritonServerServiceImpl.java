@@ -42,8 +42,8 @@ import org.eclipse.kura.ai.inference.Tensor;
 import org.eclipse.kura.ai.inference.TensorDescriptor;
 import org.eclipse.kura.ai.inference.TensorDescriptorBuilder;
 import org.eclipse.kura.configuration.ConfigurableComponent;
+import org.eclipse.kura.container.orchestration.ContainerOrchestrationService;
 import org.eclipse.kura.crypto.CryptoService;
-import org.eclipse.kura.executor.CommandExecutorService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -77,7 +77,7 @@ public class TritonServerServiceImpl implements InferenceEngineService, Configur
     private static final Logger logger = LoggerFactory.getLogger(TritonServerServiceImpl.class);
     private static final String TEMP_DIRECTORY_PREFIX = "decrypted_models";
 
-    private CommandExecutorService commandExecutorService;
+    private ContainerOrchestrationService containerOrchestrationService;
     private CryptoService cryptoService;
     private TritonServerServiceOptions options;
     private TritonServerLocalManager tritonServerLocalManager;
@@ -86,8 +86,8 @@ public class TritonServerServiceImpl implements InferenceEngineService, Configur
     private GRPCInferenceServiceBlockingStub grpcStub;
     private String decryptionFolderPath = "";
 
-    public void setCommandExecutorService(CommandExecutorService executorService) {
-        this.commandExecutorService = executorService;
+    public void setContainerOrchestrationService(ContainerOrchestrationService executorService) {
+        this.containerOrchestrationService = executorService;
     }
 
     public void setCryptoService(CryptoService cryptoService) {
@@ -140,7 +140,7 @@ public class TritonServerServiceImpl implements InferenceEngineService, Configur
             }
             logger.info("Created decryption model directory at {}", this.decryptionFolderPath);
         }
-        this.tritonServerLocalManager = new TritonServerLocalManager(this.options, this.commandExecutorService,
+        this.tritonServerLocalManager = new TritonServerLocalManager(this.options, this.containerOrchestrationService,
                 this.decryptionFolderPath);
         this.tritonServerLocalManager.start();
     }
