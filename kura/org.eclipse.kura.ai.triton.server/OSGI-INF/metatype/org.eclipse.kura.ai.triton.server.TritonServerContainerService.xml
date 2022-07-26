@@ -92,6 +92,17 @@
             description="Only for local instance, specify the path on the filesystem where the models are stored.">
        </AD>
 
+        <AD id="gpu.devices"
+            name="GPU devices to pass to the container"
+            type="Integer"
+            cardinality="0"
+            min="0"
+            max="4"
+            required="false"
+            default="0"
+            description="Only for container instance, specify the number of GPU devices to pass to the Triton container">
+       </AD>
+
        <AD id="local.model.repository.password"
             name="Local model decryption password"
             type="Password"
