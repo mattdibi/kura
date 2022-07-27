@@ -8,7 +8,7 @@ import java.util.Map;
 
 import org.junit.Test;
 
-public class TritonServerServiceRemoteTest extends TritonServerServiceStepDefinitions {
+public class TritonServerServiceRemoteImplTest extends TritonServerServiceStepDefinitions {
 
     @Test
     public void isConfigurationValidWorksWithDefault() throws IOException {
