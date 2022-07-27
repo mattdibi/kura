@@ -18,13 +18,6 @@ public class TritonServerServiceRemoteImplTest extends TritonServerServiceStepDe
     }
 
     @Test
-    public void isConfigurationValidWorksWithRemoteConfiguration() throws IOException {
-        givenTritonServerServiceRemoteImpl(defaultProperties());
-
-        thenIsConfigurationValidReturns(true);
-    }
-
-    @Test
     public void isConfigurationValidWorksWithInvalidRemoteConfiguration() throws IOException {
         givenTritonServerServiceRemoteImpl(invalidRemoteProperties());
 
