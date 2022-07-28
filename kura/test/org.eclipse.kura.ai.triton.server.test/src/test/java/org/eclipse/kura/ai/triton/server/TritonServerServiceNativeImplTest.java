@@ -69,7 +69,6 @@ public class TritonServerServiceNativeImplTest extends TritonServerServiceStepDe
     private Map<String, Object> validNativeProperties() {
         Map<String, Object> properties = new HashMap<>();
 
-        properties.put("server.address", "localhost");
         properties.put("server.ports", new Integer[] { 4001, 4002, 4003 });
         properties.put("local.backends.path", "/fake-backends-path");
         properties.put("local.model.repository.path", "/fake-repository-path");
@@ -80,7 +79,6 @@ public class TritonServerServiceNativeImplTest extends TritonServerServiceStepDe
     private Map<String, Object> validEncryptionNativeProperties() {
         Map<String, Object> properties = new HashMap<>();
 
-        properties.put("server.address", "localhost");
         properties.put("server.ports", new Integer[] { 4001, 4002, 4003 });
         properties.put("local.backends.path", "/fake-backends-path");
         properties.put("local.model.repository.path", "/fake-repository-path");
