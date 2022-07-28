@@ -20,4 +20,8 @@ public class TritonServerServiceNativeImpl extends TritonServerServiceAbs {
         return this.options.isModelEncryptionPasswordSet();
     }
 
+    @Override
+    String getServerAddress() {
+        return "localhost";
+    }
 }

@@ -19,4 +19,9 @@ public class TritonServerServiceRemoteImpl extends TritonServerServiceAbs {
     boolean isModelEncryptionEnabled() {
         return false; // Feature not supported for remote instances
     }
+
+    @Override
+    String getServerAddress() {
+        return this.options.getAddress();
+    }
 }
