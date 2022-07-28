@@ -11,7 +11,7 @@ import org.junit.Test;
 public class TritonServerServiceRemoteImplTest extends TritonServerServiceStepDefinitions {
 
     @Test
-    public void isConfigurationValidWorksWithDefault() throws IOException {
+    public void isConfigurationValidWorksWithDefaultConfiguration() throws IOException {
         givenTritonServerServiceRemoteImpl(defaultProperties());
 
         thenIsConfigurationValidReturns(true);
