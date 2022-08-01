@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
+import org.eclipse.kura.ai.triton.server.internal.TritonServerNativeManager;
 import org.eclipse.kura.core.linux.executor.LinuxSignal;
 import org.eclipse.kura.executor.Command;
 import org.eclipse.kura.executor.CommandExecutorService;

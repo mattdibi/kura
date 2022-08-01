@@ -15,6 +15,7 @@ package org.eclipse.kura.ai.triton.server;
 
 import static org.junit.Assert.assertEquals;
 
+import org.eclipse.kura.ai.triton.server.internal.TritonServerRemoteManager;
 import org.junit.Test;
 
 public class TritonServerRemoteManagerTest {
