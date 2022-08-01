@@ -31,7 +31,7 @@ public class TritonServerServiceOrigImpl extends TritonServerServiceAbs {
     }
 
     @Override
-    protected boolean isConfigurationValid() {
+    public boolean isConfigurationValid() {
         if (!this.options.isLocalEnabled()) {
             return !isNullOrEmpty(this.options.getAddress());
         }
@@ -39,12 +39,12 @@ public class TritonServerServiceOrigImpl extends TritonServerServiceAbs {
     }
 
     @Override
-    protected boolean isModelEncryptionEnabled() {
+    public boolean isModelEncryptionEnabled() {
         return this.options.isLocalEnabled() && this.options.isModelEncryptionPasswordSet();
     }
 
     @Override
-    protected String getServerAddress() {
+    public String getServerAddress() {
         if (this.options.isLocalEnabled()) {
             return "localhost";
         } else {

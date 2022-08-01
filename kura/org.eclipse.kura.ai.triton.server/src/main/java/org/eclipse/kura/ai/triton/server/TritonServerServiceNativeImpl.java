@@ -26,17 +26,17 @@ public class TritonServerServiceNativeImpl extends TritonServerServiceAbs {
     }
 
     @Override
-    protected boolean isConfigurationValid() {
+    public boolean isConfigurationValid() {
         return !isNullOrEmpty(this.options.getBackendsPath()) && !isNullOrEmpty(this.options.getModelRepositoryPath());
     }
 
     @Override
-    protected boolean isModelEncryptionEnabled() {
+    public boolean isModelEncryptionEnabled() {
         return this.options.isModelEncryptionPasswordSet();
     }
 
     @Override
-    protected String getServerAddress() {
+    public String getServerAddress() {
         return "localhost";
     }
 }

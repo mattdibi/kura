@@ -100,11 +100,11 @@ public abstract class TritonServerServiceAbs implements InferenceEngineService, 
     protected abstract TritonServerInstanceManager createInstanceManager(TritonServerServiceOptions options,
             CommandExecutorService executorService, String decryptionFolderPath);
 
-    protected abstract boolean isConfigurationValid();
+    public abstract boolean isConfigurationValid();
 
-    protected abstract boolean isModelEncryptionEnabled();
+    public abstract boolean isModelEncryptionEnabled();
 
-    protected abstract String getServerAddress();
+    public abstract String getServerAddress();
 
     protected void activate(Map<String, Object> properties) {
         logger.info("Activate TritonServerService...");

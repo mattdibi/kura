@@ -26,17 +26,17 @@ public class TritonServerServiceRemoteImpl extends TritonServerServiceAbs {
     }
 
     @Override
-    protected boolean isConfigurationValid() {
+    public boolean isConfigurationValid() {
         return !isNullOrEmpty(this.options.getAddress());
     }
 
     @Override
-    protected boolean isModelEncryptionEnabled() {
+    public boolean isModelEncryptionEnabled() {
         return false; // Feature not supported for remote instances
     }
 
     @Override
-    protected String getServerAddress() {
+    public String getServerAddress() {
         return this.options.getAddress();
     }
 }
