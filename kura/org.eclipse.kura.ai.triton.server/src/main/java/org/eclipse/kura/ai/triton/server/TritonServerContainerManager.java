@@ -5,6 +5,7 @@ import static java.util.Objects.nonNull;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -13,7 +14,9 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.kura.KuraException;
 import org.eclipse.kura.container.orchestration.ContainerConfiguration;
 import org.eclipse.kura.container.orchestration.ContainerConfiguration.ContainerConfigurationBuilder;
+import org.eclipse.kura.container.orchestration.ContainerNetworkConfiguration.ContainerNetworkConfigurationBuilder;
 import org.eclipse.kura.container.orchestration.ContainerOrchestrationService;
+import org.eclipse.kura.container.orchestration.ImageConfiguration.ImageConfigurationBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -133,11 +136,23 @@ public class TritonServerContainerManager implements TritonServerInstanceManager
     }
 
     private ContainerConfiguration createContainerConfiguration() {
+        ImageConfigurationBuilder imageConfigBuilder = new ImageConfigurationBuilder();
+
+        imageConfigBuilder.setImageName("nvcr.io/nvidia/tritonserver");
+        imageConfigBuilder.setImageTag("22.02-py3-min");
+        imageConfigBuilder.setRegistryCredentials(Optional.empty());
+
+        ContainerNetworkConfigurationBuilder networkConfigurationBuilder = new ContainerNetworkConfigurationBuilder();
+        networkConfigurationBuilder.setNetworkMode(Optional.empty());
+
         ContainerConfigurationBuilder builder = new ContainerConfigurationBuilder();
 
-        builder.setContainerImage("nvcr.io/nvidia/tritonserver");
-        builder.setContainerImageTag("22.02-py3");
+        builder.setImageConfiguration(imageConfigBuilder.build());
+        builder.setContainerNetowrkConfiguration(networkConfigurationBuilder.build());
+
+        builder.setContainerName("tritonserver");
         builder.setFrameworkManaged(true);
+        builder.setLoggingType("DEFAULT");
         builder.setInternalPorts(Arrays.asList(8000, 8001, 8002));
         builder.setExternalPorts(
                 Arrays.asList(this.options.getHttpPort(), this.options.getGrpcPort(), this.options.getMetricsPort()));
