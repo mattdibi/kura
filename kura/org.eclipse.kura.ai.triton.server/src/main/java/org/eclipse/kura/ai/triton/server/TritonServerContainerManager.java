@@ -3,8 +3,7 @@ package org.eclipse.kura.ai.triton.server;
 import static java.util.Objects.nonNull;
 
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Collections;
 import java.util.Optional;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -156,11 +155,7 @@ public class TritonServerContainerManager implements TritonServerInstanceManager
         builder.setInternalPorts(Arrays.asList(8000, 8001, 8002));
         builder.setExternalPorts(
                 Arrays.asList(this.options.getHttpPort(), this.options.getGrpcPort(), this.options.getMetricsPort()));
-
-        Map<String, String> map = new HashMap<>();
-        map.put(this.options.getModelRepositoryPath(), "/models");
-        builder.setVolumes(map);
-
+        builder.setVolumes(Collections.singletonMap(this.options.getModelRepositoryPath(), "/models"));
         builder.setEntryPoint(
                 Arrays.asList("tritonserver", "--model-repository=/models", "--model-control-mode=explicit"));
 
