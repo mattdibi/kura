@@ -13,8 +13,10 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.kura.KuraException;
 import org.eclipse.kura.container.orchestration.ContainerConfiguration;
 import org.eclipse.kura.container.orchestration.ContainerConfiguration.ContainerConfigurationBuilder;
+import org.eclipse.kura.container.orchestration.ContainerInstanceDescriptor;
 import org.eclipse.kura.container.orchestration.ContainerNetworkConfiguration.ContainerNetworkConfigurationBuilder;
 import org.eclipse.kura.container.orchestration.ContainerOrchestrationService;
+import org.eclipse.kura.container.orchestration.ContainerState;
 import org.eclipse.kura.container.orchestration.ImageConfiguration.ImageConfigurationBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,6 +26,7 @@ public class TritonServerContainerManager implements TritonServerInstanceManager
     private static final Logger logger = LoggerFactory.getLogger(TritonServerContainerManager.class);
 
     private static final int MONITOR_PERIOD = 30;
+    private static final String TRITON_CONTAINER_NAME = "tritonserver-kura";
 
     private final String decryptionFolderPath;
     private final ContainerOrchestrationService containerOrchestrationService;
@@ -122,7 +125,17 @@ public class TritonServerContainerManager implements TritonServerInstanceManager
 
     @Override
     public boolean isServerRunning() {
-        return !this.containerID.isEmpty();
+        final Optional<ContainerInstanceDescriptor> existingInstance = this.containerOrchestrationService
+                .listContainerDescriptors().stream().filter(c -> c.getContainerName().equals(TRITON_CONTAINER_NAME))
+                .findAny();
+
+        if (!existingInstance.isPresent()) {
+            return false;
+        }
+
+        ContainerInstanceDescriptor descr = existingInstance.get();
+        return descr.getContainerState() == ContainerState.ACTIVE
+                || descr.getContainerState() == ContainerState.STARTING;
     }
 
     private static void sleepFor(long timeout) {
@@ -151,7 +164,7 @@ public class TritonServerContainerManager implements TritonServerInstanceManager
         builder.setImageConfiguration(imageConfigBuilder.build());
         builder.setContainerNetowrkConfiguration(networkConfigurationBuilder.build());
 
-        builder.setContainerName("tritonserver");
+        builder.setContainerName(TRITON_CONTAINER_NAME);
         builder.setFrameworkManaged(true);
         builder.setLoggingType("DEFAULT");
         builder.setInternalPorts(Arrays.asList(8000, 8001, 8002));
