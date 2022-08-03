@@ -137,12 +137,14 @@ public class TritonServerContainerManager implements TritonServerInstanceManager
     private ContainerConfiguration createContainerConfiguration() {
         ImageConfigurationBuilder imageConfigBuilder = new ImageConfigurationBuilder();
 
-        imageConfigBuilder.setImageName("nvcr.io/nvidia/tritonserver");
-        imageConfigBuilder.setImageTag("22.02-py3-min");
+        // imageConfigBuilder.setImageName("nvcr.io/nvidia/tritonserver");
+        // imageConfigBuilder.setImageTag("22.02-py3-min");
+        imageConfigBuilder.setImageName("tritonserver");
+        imageConfigBuilder.setImageTag("latest");
         imageConfigBuilder.setRegistryCredentials(Optional.empty());
 
         ContainerNetworkConfigurationBuilder networkConfigurationBuilder = new ContainerNetworkConfigurationBuilder();
-        networkConfigurationBuilder.setNetworkMode(Optional.empty());
+        networkConfigurationBuilder.setNetworkMode(Optional.of("host"));
 
         ContainerConfigurationBuilder builder = new ContainerConfigurationBuilder();
 
