@@ -104,6 +104,7 @@ public class TritonServerContainerManager implements TritonServerInstanceManager
         try {
             this.containerOrchestrationService.stopContainer(containerID);
             this.containerID = "";
+            this.containerOrchestrationService.deleteContainer(containerID);
         } catch (KuraException e) {
             logger.error("Can't stop {} won't stop LOL", containerID);
         }
