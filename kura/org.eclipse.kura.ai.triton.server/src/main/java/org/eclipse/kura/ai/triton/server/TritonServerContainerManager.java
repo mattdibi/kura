@@ -157,7 +157,7 @@ public class TritonServerContainerManager implements TritonServerInstanceManager
         imageConfigBuilder.setRegistryCredentials(Optional.empty());
 
         ContainerNetworkConfigurationBuilder networkConfigurationBuilder = new ContainerNetworkConfigurationBuilder();
-        networkConfigurationBuilder.setNetworkMode(Optional.of("host"));
+        networkConfigurationBuilder.setNetworkMode(Optional.empty());
 
         ContainerConfigurationBuilder builder = new ContainerConfigurationBuilder();
 
