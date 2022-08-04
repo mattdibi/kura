@@ -169,7 +169,13 @@ public class TritonServerContainerManager implements TritonServerInstanceManager
         builder.setInternalPorts(Arrays.asList(8000, 8001, 8002));
         builder.setExternalPorts(
                 Arrays.asList(this.options.getHttpPort(), this.options.getGrpcPort(), this.options.getMetricsPort()));
-        builder.setVolumes(Collections.singletonMap(this.options.getModelRepositoryPath(), "/models"));
+
+        if (this.options.isModelEncryptionPasswordSet()) {
+            builder.setVolumes(Collections.singletonMap(this.decryptionFolderPath, "/models"));
+        } else {
+            builder.setVolumes(Collections.singletonMap(this.options.getModelRepositoryPath(), "/models"));
+        }
+
         builder.setEntryPoint(
                 Arrays.asList("tritonserver", "--model-repository=/models", "--model-control-mode=explicit"));
 

@@ -19,7 +19,7 @@ public class TritonServerServiceContainerImpl extends TritonServerServiceAbs {
 
     @Override
     boolean isModelEncryptionEnabled() {
-        return false; // Temporarily disabled
+        return this.options.isModelEncryptionPasswordSet();
     }
 
     @Override
