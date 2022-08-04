@@ -151,8 +151,8 @@ public class TritonServerContainerManager implements TritonServerInstanceManager
     private ContainerConfiguration createContainerConfiguration() {
 
         ImageConfigurationBuilder imageConfigBuilder = new ImageConfigurationBuilder();
-        imageConfigBuilder.setImageName("tritonserver");
-        imageConfigBuilder.setImageTag("latest");
+        imageConfigBuilder.setImageName(this.options.getContainerImage());
+        imageConfigBuilder.setImageTag(this.options.getContainerImageTag());
         imageConfigBuilder.setRegistryCredentials(Optional.empty());
 
         ContainerNetworkConfigurationBuilder networkConfigurationBuilder = new ContainerNetworkConfigurationBuilder();

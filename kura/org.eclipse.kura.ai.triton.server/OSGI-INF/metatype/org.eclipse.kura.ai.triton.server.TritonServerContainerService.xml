@@ -18,6 +18,24 @@
          name="Nvidia Triton Server"
          description="Configuration for the Local Container Nvidia Triton Server">
 
+        <AD id="container.image"
+            name="Image name"
+            description="The image the container will be created with. The value will need to be expressed in the form registryURL/imagename in case of a custom registry.
+            Please fill the following registry credentials in case of pulling from a custom or authenticated Docker hub registry."
+            type="String"
+            cardinality="1"
+            required="true"
+            default="nvcr.io/nvidia/tritonserver">
+        </AD>
+
+        <AD id="container.image.tag" name="Image tag"
+            description="Describes which image version that should be pulled from the container registry."
+            type="String"
+            cardinality="1"
+            required="true"
+            default="latest">
+        </AD>
+
         <AD id="server.ports"
             name="Nvidia Triton Server ports"
             type="Integer"

@@ -27,6 +27,8 @@ import org.eclipse.kura.KuraRuntimeException;
 
 public class TritonServerServiceOptions {
 
+    private static final String PROPERTY_CONTAINER_IMAGE = "container.image";
+    private static final String PROPERTY_CONTAINER_TAG = "container.image.tag";
     private static final String PROPERTY_ADDRESS = "server.address";
     private static final String PROPERTY_PORTS = "server.ports";
     private static final String PROPERTY_LOCAL_MODEL_REPOSITORY_PATH = "local.model.repository.path";
@@ -121,6 +123,14 @@ public class TritonServerServiceOptions {
 
     public int getMetricsPort() {
         return this.metricsPort;
+    }
+
+    public String getContainerImage() {
+        return getStringProperty(PROPERTY_CONTAINER_IMAGE);
+    }
+
+    public String getContainerImageTag() {
+        return getStringProperty(PROPERTY_CONTAINER_TAG);
     }
 
     public String getModelRepositoryPath() {

@@ -14,7 +14,8 @@ public class TritonServerServiceContainerImpl extends TritonServerServiceAbs {
 
     @Override
     boolean isConfigurationValid() {
-        return !isNullOrEmpty(this.options.getModelRepositoryPath());
+        return !isNullOrEmpty(this.options.getModelRepositoryPath()) && !isNullOrEmpty(this.options.getContainerImage())
+                && !isNullOrEmpty(this.options.getContainerImageTag());
     }
 
     @Override
