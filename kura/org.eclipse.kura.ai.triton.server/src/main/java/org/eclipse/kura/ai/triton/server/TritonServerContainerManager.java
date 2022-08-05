@@ -212,8 +212,14 @@ public class TritonServerContainerManager implements TritonServerInstanceManager
             builder.setVolumes(Collections.singletonMap(this.options.getModelRepositoryPath(), "/models"));
         }
 
-        builder.setEntryPoint(
-                Arrays.asList("tritonserver", "--model-repository=/models", "--model-control-mode=explicit"));
+        List<String> entrypointOverride = Arrays.asList("tritonserver", "--model-repository=/models",
+                "--model-control-mode=explicit");
+
+        if (!this.options.getBackendsConfigs().isEmpty()) {
+            this.options.getBackendsConfigs().forEach(config -> entrypointOverride.add("--backend-config=" + config));
+        }
+
+        builder.setEntryPoint(entrypointOverride);
 
         return builder.build();
     }
