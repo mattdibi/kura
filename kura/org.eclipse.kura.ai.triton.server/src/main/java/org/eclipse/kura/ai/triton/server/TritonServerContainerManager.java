@@ -4,6 +4,7 @@ import static java.util.Objects.nonNull;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -18,6 +19,7 @@ import org.eclipse.kura.container.orchestration.ContainerNetworkConfiguration.Co
 import org.eclipse.kura.container.orchestration.ContainerOrchestrationService;
 import org.eclipse.kura.container.orchestration.ContainerState;
 import org.eclipse.kura.container.orchestration.ImageConfiguration.ImageConfigurationBuilder;
+import org.eclipse.kura.container.orchestration.ImageInstanceDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,6 +48,10 @@ public class TritonServerContainerManager implements TritonServerInstanceManager
 
     @Override
     public void start() {
+        if (!isImageAvailable()) {
+            logger.error("Docker image not available on disk. Aborting....");
+            return;
+        }
         startContainerServerMonitor();
     }
 
@@ -126,17 +132,43 @@ public class TritonServerContainerManager implements TritonServerInstanceManager
 
     @Override
     public boolean isServerRunning() {
-        final Optional<ContainerInstanceDescriptor> existingInstance = this.containerOrchestrationService
-                .listContainerDescriptors().stream().filter(c -> c.getContainerName().equals(TRITON_CONTAINER_NAME))
-                .findAny();
+        try {
+            final Optional<ContainerInstanceDescriptor> existingInstance = this.containerOrchestrationService
+                    .listContainerDescriptors().stream().filter(c -> c.getContainerName().equals(TRITON_CONTAINER_NAME))
+                    .findAny();
 
-        if (!existingInstance.isPresent()) {
+            if (!existingInstance.isPresent()) {
+                return false;
+            }
+
+            ContainerInstanceDescriptor descr = existingInstance.get();
+            return descr.getContainerState() == ContainerState.ACTIVE
+                    || descr.getContainerState() == ContainerState.STARTING;
+        } catch (IllegalStateException e) {
+            logger.error("Cannot retrieve container status information");
+            return false;
+        }
+    }
+
+    private boolean isImageAvailable() {
+        List<ImageInstanceDescriptor> existingImage;
+
+        try {
+            existingImage = this.containerOrchestrationService.listImageInstanceDescriptors();
+        } catch (IllegalStateException e) {
+            logger.error("Cannot retrieve container imgae status information");
             return false;
         }
 
-        ContainerInstanceDescriptor descr = existingInstance.get();
-        return descr.getContainerState() == ContainerState.ACTIVE
-                || descr.getContainerState() == ContainerState.STARTING;
+        for (ImageInstanceDescriptor imageDescriptor : existingImage) {
+            if (imageDescriptor.getImageName().equals(this.options.getContainerImage())
+                    && imageDescriptor.getImageTag().equals(this.options.getContainerImageTag())) {
+                return true;
+            }
+
+        }
+
+        return false;
     }
 
     private static void sleepFor(long timeout) {
