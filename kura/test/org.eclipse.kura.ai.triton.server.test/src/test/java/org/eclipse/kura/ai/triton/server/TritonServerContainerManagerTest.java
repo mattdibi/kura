@@ -187,7 +187,6 @@ public class TritonServerContainerManagerTest {
         givenPropertyWith("container.image", TRITON_IMAGE_NAME);
         givenPropertyWith("container.image.tag", TRITON_IMAGE_TAG);
         givenPropertyWith("local.model.repository.path", TRITON_REPOSITORY_PATH);
-        givenPropertyWith("local.model.repository.password", "hutini");
         givenPropertyWith("server.ports", new Integer[] { 4000, 4001, 4002 });
         givenPropertyWith("container.memory", "7g");
         givenPropertyWith("container.cpus", "1.5");
