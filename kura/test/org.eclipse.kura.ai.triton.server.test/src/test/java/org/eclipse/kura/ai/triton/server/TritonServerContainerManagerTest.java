@@ -191,7 +191,7 @@ public class TritonServerContainerManagerTest {
         givenPropertyWith("local.model.repository.path", TRITON_REPOSITORY_PATH);
         givenPropertyWith("server.ports", new Integer[] { 4000, 4001, 4002 });
         givenPropertyWith("container.memory", "7g");
-        givenPropertyWith("container.cpus", "1.5");
+        givenPropertyWith("container.cpus", 1.5F);
         givenPropertyWith("container.gpus", "all");
         givenServiceOptionsBuiltWith(properties);
 
