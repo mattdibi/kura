@@ -21,7 +21,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.kura.KuraException;
@@ -31,6 +33,8 @@ import org.eclipse.kura.container.orchestration.ContainerOrchestrationService;
 import org.eclipse.kura.container.orchestration.ContainerState;
 import org.eclipse.kura.container.orchestration.ImageInstanceDescriptor;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 
 public class TritonServerContainerManagerTest {
 
@@ -39,12 +43,17 @@ public class TritonServerContainerManagerTest {
     private static final String MOCK_DECRYPT_FOLDER = "testDecryptionFolder";
     private static final String TRITON_CONTAINER_NAME = "tritonserver-kura";
     private static final String TRITON_CONTAINER_ID = "tritonserver-kura-ID";
+    private static final String TRITON_REPOSITORY_PATH = "/path/to/repository";
 
     private Map<String, Object> properties = new HashMap<>();
     private TritonServerServiceOptions options = new TritonServerServiceOptions(properties);
 
     private ContainerOrchestrationService orc;
     private TritonServerContainerManager manager;
+
+    @Captor
+    ArgumentCaptor<ContainerConfiguration> configurationCaptor;
+    private ContainerConfiguration capturedContainerConfig;
 
     @Test
     public void isServerRunningWorksWhenNotRunning() {
@@ -109,23 +118,6 @@ public class TritonServerContainerManagerTest {
     }
 
     @Test
-    public void startMethodShouldWorkIfImageIsAvailable() {
-        givenPropertyWith("container.image", TRITON_IMAGE_NAME);
-        givenPropertyWith("container.image.tag", TRITON_IMAGE_TAG);
-        givenPropertyWith("server.ports", new Integer[] { 4000, 4001, 4002 });
-        givenServiceOptionsBuiltWith(properties);
-
-        givenMockContainerOrchestrationService();
-        givenTritonImageIsAvailable();
-        givenTritonContainerIsNotRunning();
-        givenLocalManagerBuiltWith(this.options, this.orc, MOCK_DECRYPT_FOLDER);
-
-        whenStartIsCalled();
-
-        thenContainerOrchestrationStartContainerWasCalled();
-    }
-
-    @Test
     public void startMethodShouldWorkIfImageIsNotAvailable() {
         givenPropertyWith("container.image", TRITON_IMAGE_NAME);
         givenPropertyWith("container.image.tag", TRITON_IMAGE_TAG);
@@ -140,6 +132,84 @@ public class TritonServerContainerManagerTest {
         whenStartIsCalled();
 
         thenContainerOrchestrationStartContainerWasNotCalled();
+    }
+
+    @Test
+    public void startMethodShouldWorkIfImageIsAvailable() {
+        givenPropertyWith("container.image", TRITON_IMAGE_NAME);
+        givenPropertyWith("container.image.tag", TRITON_IMAGE_TAG);
+        givenPropertyWith("local.model.repository.path", TRITON_REPOSITORY_PATH);
+        givenPropertyWith("server.ports", new Integer[] { 4000, 4001, 4002 });
+        givenServiceOptionsBuiltWith(properties);
+
+        givenMockContainerOrchestrationService();
+        givenTritonImageIsAvailable();
+        givenTritonContainerIsNotRunning();
+        givenLocalManagerBuiltWith(this.options, this.orc, MOCK_DECRYPT_FOLDER);
+
+        whenStartIsCalled();
+
+        thenContainerOrchestrationStartContainerWasCalled();
+        thenContainerConfigurationPortsEquals(Arrays.asList(4000, 4001, 4002));
+        thenContainerConfigurationImageEquals(TRITON_IMAGE_NAME);
+        thenContainerConfigurationImageTagEquals(TRITON_IMAGE_TAG);
+        thenContainerConfigurationNameEquals(TRITON_CONTAINER_NAME);
+        thenContainerConfigurationPortsEquals(Collections.singletonMap(TRITON_REPOSITORY_PATH, "/models"));
+
+        thenContainerConfigurationMemoryIsPresent(false);
+        thenContainerConfigurationCpusIsPresent(false);
+        thenContainerConfigurationGpusIsPresent(false);
+    }
+
+    @Test
+    public void containerManagerShouldUseDecryptionFolderIfPasswordIsSet() {
+        givenPropertyWith("container.image", TRITON_IMAGE_NAME);
+        givenPropertyWith("container.image.tag", TRITON_IMAGE_TAG);
+        givenPropertyWith("local.model.repository.path", TRITON_REPOSITORY_PATH);
+        givenPropertyWith("local.model.repository.password", "hutini");
+        givenPropertyWith("server.ports", new Integer[] { 4000, 4001, 4002 });
+        givenServiceOptionsBuiltWith(properties);
+
+        givenMockContainerOrchestrationService();
+        givenTritonImageIsAvailable();
+        givenTritonContainerIsNotRunning();
+        givenLocalManagerBuiltWith(this.options, this.orc, MOCK_DECRYPT_FOLDER);
+
+        whenStartIsCalled();
+
+        thenContainerOrchestrationStartContainerWasCalled();
+        thenContainerConfigurationPortsEquals(Collections.singletonMap(MOCK_DECRYPT_FOLDER, "/models"));
+    }
+
+    @Test
+    public void containerDeviceRuntimeOptionsAreCorrectlySet() {
+        givenPropertyWith("container.image", TRITON_IMAGE_NAME);
+        givenPropertyWith("container.image.tag", TRITON_IMAGE_TAG);
+        givenPropertyWith("local.model.repository.path", TRITON_REPOSITORY_PATH);
+        givenPropertyWith("local.model.repository.password", "hutini");
+        givenPropertyWith("server.ports", new Integer[] { 4000, 4001, 4002 });
+        givenPropertyWith("container.memory", "7g");
+        givenPropertyWith("container.cpus", "1.5");
+        givenPropertyWith("container.gpus", "all");
+        givenServiceOptionsBuiltWith(properties);
+
+        givenMockContainerOrchestrationService();
+        givenTritonImageIsAvailable();
+        givenTritonContainerIsNotRunning();
+        givenLocalManagerBuiltWith(this.options, this.orc, MOCK_DECRYPT_FOLDER);
+
+        whenStartIsCalled();
+
+        thenContainerOrchestrationStartContainerWasCalled();
+
+        thenContainerConfigurationMemoryIsPresent(true);
+        thenContainerConfigurationMemoryEquals(7516192768L);
+
+        thenContainerConfigurationCpusIsPresent(true);
+        thenContainerConfigurationCpusEquals(1.5F);
+
+        thenContainerConfigurationGpusIsPresent(true);
+        thenContainerConfigurationGpusEquals("all");
     }
 
     /*
@@ -233,7 +303,8 @@ public class TritonServerContainerManagerTest {
 
     private void thenContainerOrchestrationStartContainerWasCalled() {
         try {
-            verify(this.orc, times(1)).startContainer((ContainerConfiguration) any(Object.class));
+            verify(this.orc, times(1)).startContainer(configurationCaptor.capture());
+            this.capturedContainerConfig = configurationCaptor.getValue();
         } catch (KuraException | InterruptedException e) {
             fail();
         }
@@ -245,5 +316,49 @@ public class TritonServerContainerManagerTest {
         } catch (KuraException | InterruptedException e) {
             fail();
         }
+    }
+
+    private void thenContainerConfigurationImageEquals(String expectedImage) {
+        assertEquals(expectedImage, this.capturedContainerConfig.getContainerImage());
+    }
+
+    private void thenContainerConfigurationImageTagEquals(String expectedImageTag) {
+        assertEquals(expectedImageTag, this.capturedContainerConfig.getContainerImageTag());
+    }
+
+    private void thenContainerConfigurationNameEquals(String expectedContainerName) {
+        assertEquals(expectedContainerName, this.capturedContainerConfig.getContainerName());
+    }
+
+    private void thenContainerConfigurationPortsEquals(List<Integer> expectedPorts) {
+        assertEquals(expectedPorts, this.capturedContainerConfig.getContainerPortsExternal());
+    }
+
+    private void thenContainerConfigurationPortsEquals(Map<String, String> expectedVolumes) {
+        assertEquals(expectedVolumes, this.capturedContainerConfig.getContainerVolumes());
+    }
+
+    private void thenContainerConfigurationMemoryIsPresent(boolean expectedResult) {
+        assertEquals(expectedResult, this.capturedContainerConfig.getMemory().isPresent());
+    }
+
+    private void thenContainerConfigurationMemoryEquals(Long expectedMemory) {
+        assertEquals(expectedMemory, this.capturedContainerConfig.getMemory().get());
+    }
+
+    private void thenContainerConfigurationCpusIsPresent(boolean expectedResult) {
+        assertEquals(expectedResult, this.capturedContainerConfig.getCpus().isPresent());
+    }
+
+    private void thenContainerConfigurationCpusEquals(Float expectedCpus) {
+        assertEquals(expectedCpus, this.capturedContainerConfig.getCpus().get());
+    }
+
+    private void thenContainerConfigurationGpusIsPresent(boolean expectedResult) {
+        assertEquals(expectedResult, this.capturedContainerConfig.getGpus().isPresent());
+    }
+
+    private void thenContainerConfigurationGpusEquals(String expectedGpus) {
+        assertEquals(expectedGpus, this.capturedContainerConfig.getGpus().get());
     }
 }
