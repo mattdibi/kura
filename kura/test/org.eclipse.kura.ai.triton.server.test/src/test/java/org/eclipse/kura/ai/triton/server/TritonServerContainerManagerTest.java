@@ -127,7 +127,7 @@ public class TritonServerContainerManagerTest {
         givenServiceOptionsBuiltWith(properties);
 
         givenMockContainerOrchestrationService();
-        givenTritonImageIsAvailable();
+        givenTritonImageIsNotAvailable();
         givenTritonContainerIsNotRunning();
         givenLocalManagerBuiltWith(this.options, this.orc, MOCK_DECRYPT_FOLDER);
 
@@ -235,6 +235,10 @@ public class TritonServerContainerManagerTest {
         when(imageDescriptor.getImageTag()).thenReturn(TRITON_IMAGE_TAG);
 
         when(this.orc.listImageInstanceDescriptors()).thenReturn(Arrays.asList(imageDescriptor));
+    }
+
+    private void givenTritonImageIsNotAvailable() {
+        when(this.orc.listImageInstanceDescriptors()).thenReturn(Arrays.asList());
     }
 
     private void givenTritonContainerIsRunning() {
