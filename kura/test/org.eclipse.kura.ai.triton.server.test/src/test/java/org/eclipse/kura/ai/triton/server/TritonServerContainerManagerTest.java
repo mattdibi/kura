@@ -42,6 +42,7 @@ public class TritonServerContainerManagerTest {
 
     private static final String TRITON_IMAGE_NAME = "tritonserver";
     private static final String TRITON_IMAGE_TAG = "latest";
+    private static final String TRITON_INTERNAL_MODEL_REPO = "/models";
     private static final String MOCK_DECRYPT_FOLDER = "testDecryptionFolder";
     private static final String TRITON_CONTAINER_NAME = "tritonserver-kura";
     private static final String TRITON_CONTAINER_ID = "tritonserver-kura-ID";
@@ -158,7 +159,8 @@ public class TritonServerContainerManagerTest {
         thenContainerConfigurationImageEquals(TRITON_IMAGE_NAME);
         thenContainerConfigurationImageTagEquals(TRITON_IMAGE_TAG);
         thenContainerConfigurationNameEquals(TRITON_CONTAINER_NAME);
-        thenContainerConfigurationPortsEquals(Collections.singletonMap(TRITON_REPOSITORY_PATH, "/models"));
+        thenContainerConfigurationVolumesEquals(
+                Collections.singletonMap(TRITON_REPOSITORY_PATH, TRITON_INTERNAL_MODEL_REPO));
         thenContainerConfigurationEntrypointOverrideContains("--model-control-mode=explicit");
 
         thenContainerConfigurationMemoryIsPresent(false);
@@ -183,7 +185,8 @@ public class TritonServerContainerManagerTest {
         whenStartIsCalled();
 
         thenContainerOrchestrationStartContainerWasCalled();
-        thenContainerConfigurationPortsEquals(Collections.singletonMap(MOCK_DECRYPT_FOLDER, "/models"));
+        thenContainerConfigurationVolumesEquals(
+                Collections.singletonMap(MOCK_DECRYPT_FOLDER, TRITON_INTERNAL_MODEL_REPO));
     }
 
     @Test
@@ -369,7 +372,7 @@ public class TritonServerContainerManagerTest {
         assertEquals(expectedPorts, this.capturedContainerConfig.getContainerPortsExternal());
     }
 
-    private void thenContainerConfigurationPortsEquals(Map<String, String> expectedVolumes) {
+    private void thenContainerConfigurationVolumesEquals(Map<String, String> expectedVolumes) {
         assertEquals(expectedVolumes, this.capturedContainerConfig.getContainerVolumes());
     }
 
