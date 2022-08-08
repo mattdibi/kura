@@ -149,7 +149,7 @@ public class TritonServerContainerManager implements TritonServerInstanceManager
             return descr.getContainerState() == ContainerState.ACTIVE
                     || descr.getContainerState() == ContainerState.STARTING;
         } catch (IllegalStateException e) {
-            logger.error("Cannot retrieve container status information");
+            logger.error("Cannot retrieve container status information", e);
             return false;
         }
     }
@@ -160,7 +160,7 @@ public class TritonServerContainerManager implements TritonServerInstanceManager
         try {
             existingImage = this.containerOrchestrationService.listImageInstanceDescriptors();
         } catch (IllegalStateException e) {
-            logger.error("Cannot retrieve container imgae status information");
+            logger.error("Cannot retrieve container imgae status information", e);
             return false;
         }
 
