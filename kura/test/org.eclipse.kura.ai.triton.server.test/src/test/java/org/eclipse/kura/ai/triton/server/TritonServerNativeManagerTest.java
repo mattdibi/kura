@@ -114,7 +114,6 @@ public class TritonServerNativeManagerTest {
     public void decryptionFolderIsUsedOnlyForEncryptedModels() {
         givenPropertyWith("server.address", "localhost");
         givenPropertyWith("server.ports", new Integer[] { 4000, 4001, 4002 });
-        givenPropertyWith("enable.local", Boolean.TRUE);
         givenPropertyWith("local.model.repository.password", "password123");
         givenPropertyWith("local.model.repository.path", "modelRepositoryPath");
         givenServiceOptionsBuiltWith(properties);
@@ -134,7 +133,6 @@ public class TritonServerNativeManagerTest {
     public void backendConfigurationIsCorrectlyUsedOnStart() {
         givenPropertyWith("server.address", "localhost");
         givenPropertyWith("server.ports", new Integer[] { 4000, 4001, 4002 });
-        givenPropertyWith("enable.local", Boolean.TRUE);
         givenPropertyWith("local.backends.config", "testConfiguration");
         givenPropertyWith("local.model.repository.path", "modelRepositoryPath");
         givenServiceOptionsBuiltWith(properties);
