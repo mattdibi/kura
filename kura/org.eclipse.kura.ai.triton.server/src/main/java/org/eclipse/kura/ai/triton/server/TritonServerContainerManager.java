@@ -43,6 +43,10 @@ public class TritonServerContainerManager implements TritonServerInstanceManager
 
     private static final int MONITOR_PERIOD = 30;
     private static final String TRITON_CONTAINER_NAME = "tritonserver-kura";
+    private static final String TRITON_LOGGING_TYPE = "DEFAULT";
+    private static final String TRITON_INTERNAL_MODEL_REPO = "/models";
+    private static final boolean TRITON_FRAMEWORK_MANAGED = true;
+    private static final List<Integer> TRITON_INTERNAL_PORTS = Arrays.asList(8000, 8001, 8002);
 
     private TritonServerServiceOptions options;
     private ContainerOrchestrationService containerOrchestrationService;
@@ -221,9 +225,9 @@ public class TritonServerContainerManager implements TritonServerInstanceManager
         builder.setContainerNetowrkConfiguration(networkConfigurationBuilder.build());
 
         builder.setContainerName(TRITON_CONTAINER_NAME);
-        builder.setFrameworkManaged(true);
-        builder.setLoggingType("DEFAULT");
-        builder.setInternalPorts(Arrays.asList(8000, 8001, 8002));
+        builder.setFrameworkManaged(TRITON_FRAMEWORK_MANAGED);
+        builder.setLoggingType(TRITON_LOGGING_TYPE);
+        builder.setInternalPorts(TRITON_INTERNAL_PORTS);
         builder.setExternalPorts(
                 Arrays.asList(this.options.getHttpPort(), this.options.getGrpcPort(), this.options.getMetricsPort()));
 
@@ -232,14 +236,15 @@ public class TritonServerContainerManager implements TritonServerInstanceManager
         builder.setGpus(this.options.getContainerGpus());
 
         if (this.options.isModelEncryptionPasswordSet()) {
-            builder.setVolumes(Collections.singletonMap(this.decryptionFolderPath, "/models"));
+            builder.setVolumes(Collections.singletonMap(this.decryptionFolderPath, TRITON_INTERNAL_MODEL_REPO));
         } else {
-            builder.setVolumes(Collections.singletonMap(this.options.getModelRepositoryPath(), "/models"));
+            builder.setVolumes(
+                    Collections.singletonMap(this.options.getModelRepositoryPath(), TRITON_INTERNAL_MODEL_REPO));
         }
 
         List<String> entrypointOverride = new ArrayList<>();
         entrypointOverride.add("tritonserver");
-        entrypointOverride.add("--model-repository=/models");
+        entrypointOverride.add("--model-repository=" + TRITON_INTERNAL_MODEL_REPO);
         entrypointOverride.add("--model-control-mode=explicit");
         if (!this.options.getBackendsConfigs().isEmpty()) {
             this.options.getBackendsConfigs().forEach(config -> entrypointOverride.add("--backend-config=" + config));
