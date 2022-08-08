@@ -16,6 +16,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -52,7 +53,7 @@ public class TritonServerContainerManagerTest {
     private TritonServerContainerManager manager;
 
     @Captor
-    ArgumentCaptor<ContainerConfiguration> configurationCaptor;
+    ArgumentCaptor<ContainerConfiguration> configurationCaptor = new ArgumentCaptor<>();
     private ContainerConfiguration capturedContainerConfig;
 
     @Test
@@ -121,6 +122,7 @@ public class TritonServerContainerManagerTest {
     public void startMethodShouldWorkIfImageIsNotAvailable() {
         givenPropertyWith("container.image", TRITON_IMAGE_NAME);
         givenPropertyWith("container.image.tag", TRITON_IMAGE_TAG);
+        givenPropertyWith("local.model.repository.path", TRITON_REPOSITORY_PATH);
         givenPropertyWith("server.ports", new Integer[] { 4000, 4001, 4002 });
         givenServiceOptionsBuiltWith(properties);
 
@@ -315,7 +317,7 @@ public class TritonServerContainerManagerTest {
 
     private void thenContainerOrchestrationStartContainerWasNotCalled() {
         try {
-            verify(this.orc, times(0)).startContainer((ContainerConfiguration) any(Object.class));
+            verify(this.orc, never()).startContainer((ContainerConfiguration) any(Object.class));
         } catch (KuraException | InterruptedException e) {
             e.printStackTrace();
             fail();
