@@ -289,6 +289,7 @@ public class TritonServerContainerManagerTest {
         try {
             verify(this.orc, times(1)).stopContainer(containerID);
         } catch (KuraException e) {
+            e.printStackTrace();
             fail();
         }
     }
@@ -297,6 +298,7 @@ public class TritonServerContainerManagerTest {
         try {
             verify(this.orc, times(1)).deleteContainer(containerID);
         } catch (KuraException e) {
+            e.printStackTrace();
             fail();
         }
     }
@@ -306,6 +308,7 @@ public class TritonServerContainerManagerTest {
             verify(this.orc, times(1)).startContainer(configurationCaptor.capture());
             this.capturedContainerConfig = configurationCaptor.getValue();
         } catch (KuraException | InterruptedException e) {
+            e.printStackTrace();
             fail();
         }
     }
@@ -314,6 +317,7 @@ public class TritonServerContainerManagerTest {
         try {
             verify(this.orc, times(0)).startContainer((ContainerConfiguration) any(Object.class));
         } catch (KuraException | InterruptedException e) {
+            e.printStackTrace();
             fail();
         }
     }
