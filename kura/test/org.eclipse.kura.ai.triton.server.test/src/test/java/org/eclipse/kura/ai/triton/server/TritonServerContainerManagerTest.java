@@ -150,6 +150,7 @@ public class TritonServerContainerManagerTest {
         whenStartIsCalled();
 
         thenContainerOrchestrationStartContainerWasCalled();
+        thenContainerConfigurationIsFrameworkManaged(true);
         thenContainerConfigurationPortsEquals(Arrays.asList(4000, 4001, 4002));
         thenContainerConfigurationImageEquals(TRITON_IMAGE_NAME);
         thenContainerConfigurationImageTagEquals(TRITON_IMAGE_TAG);
@@ -360,5 +361,9 @@ public class TritonServerContainerManagerTest {
 
     private void thenContainerConfigurationGpusEquals(String expectedGpus) {
         assertEquals(expectedGpus, this.capturedContainerConfig.getGpus().get());
+    }
+
+    private void thenContainerConfigurationIsFrameworkManaged(boolean expectedResult) {
+        assertEquals(expectedResult, this.capturedContainerConfig.isFrameworkManaged());
     }
 }
