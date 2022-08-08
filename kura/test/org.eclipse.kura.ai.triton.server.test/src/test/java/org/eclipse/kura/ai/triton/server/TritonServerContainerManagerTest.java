@@ -13,6 +13,7 @@
 package org.eclipse.kura.ai.triton.server;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
@@ -158,6 +159,7 @@ public class TritonServerContainerManagerTest {
         thenContainerConfigurationImageTagEquals(TRITON_IMAGE_TAG);
         thenContainerConfigurationNameEquals(TRITON_CONTAINER_NAME);
         thenContainerConfigurationPortsEquals(Collections.singletonMap(TRITON_REPOSITORY_PATH, "/models"));
+        thenContainerConfigurationEntrypointOverrideContains("--model-control-mode=explicit");
 
         thenContainerConfigurationMemoryIsPresent(false);
         thenContainerConfigurationCpusIsPresent(false);
@@ -212,6 +214,29 @@ public class TritonServerContainerManagerTest {
 
         thenContainerConfigurationGpusIsPresent(true);
         thenContainerConfigurationGpusEquals("all");
+    }
+
+    @Test
+    public void containerBackendConfigOptionsAreCorrectlySet() {
+        givenPropertyWith("container.image", TRITON_IMAGE_NAME);
+        givenPropertyWith("container.image.tag", TRITON_IMAGE_TAG);
+        givenPropertyWith("local.model.repository.path", TRITON_REPOSITORY_PATH);
+        givenPropertyWith("server.ports", new Integer[] { 4000, 4001, 4002 });
+        givenPropertyWith("local.backends.config", "testConfiguration");
+        givenServiceOptionsBuiltWith(properties);
+
+        givenMockContainerOrchestrationService();
+        givenTritonImageIsAvailable();
+        givenTritonContainerIsNotRunning();
+        givenLocalManagerBuiltWith(this.options, this.orc, MOCK_DECRYPT_FOLDER);
+
+        whenStartIsCalled();
+
+        thenContainerOrchestrationStartContainerWasCalled();
+        thenContainerConfigurationIsFrameworkManaged(true);
+        thenContainerConfigurationPortsEquals(Arrays.asList(4000, 4001, 4002));
+        thenContainerConfigurationImageEquals(TRITON_IMAGE_NAME);
+        thenContainerConfigurationEntrypointOverrideContains("--backend-config=testConfiguration");
     }
 
     /*
@@ -374,5 +399,9 @@ public class TritonServerContainerManagerTest {
 
     private void thenContainerConfigurationIsFrameworkManaged(boolean expectedResult) {
         assertEquals(expectedResult, this.capturedContainerConfig.isFrameworkManaged());
+    }
+
+    private void thenContainerConfigurationEntrypointOverrideContains(String expectedString) {
+        assertTrue(this.capturedContainerConfig.getEntryPoint().contains(expectedString));
     }
 }
