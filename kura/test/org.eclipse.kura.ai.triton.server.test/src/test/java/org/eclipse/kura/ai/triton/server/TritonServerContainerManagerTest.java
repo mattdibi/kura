@@ -53,7 +53,7 @@ public class TritonServerContainerManagerTest {
     private TritonServerContainerManager manager;
 
     @Captor
-    ArgumentCaptor<ContainerConfiguration> configurationCaptor = new ArgumentCaptor<>();
+    ArgumentCaptor<ContainerConfiguration> configurationCaptor = ArgumentCaptor.forClass(ContainerConfiguration.class);
     private ContainerConfiguration capturedContainerConfig;
 
     @Test
