@@ -50,161 +50,164 @@ The Triton Inference Server serves models from one or more model repositories th
 
 Further information about an example Triton Server setup can be found in the [official documentation](https://github.com/triton-inference-server/server/blob/main/docs/quickstart.md).
 
+## Triton Service Components
 
+=== "Triton Server Remote Service"
 
-## Triton Server Remote Service component
+    ### Triton Server Remote Service component
 
-The Kura Triton Server Remote Service component is the implementation of the inference engine APIs and provides methods for interacting with a remote (i.e. unmnanaged) Nvidia™ Triton Server. As presented below, the component enables the user to communicate to an external server to load specific models. With this component the server lifecycle (startup, shutdown) won't be handled by Kura and it's the user responsibility to make it available to Kura for connecting.
+    The Kura Triton Server Remote Service component is the implementation of the inference engine APIs and provides methods for interacting with a remote (i.e. unmnanaged) Nvidia™ Triton Server. As presented below, the component enables the user to communicate to an external server to load specific models. With this component the server lifecycle (startup, shutdown) won't be handled by Kura and it's the user responsibility to make it available to Kura for connecting.
 
-![Nvidia Triton Server Inference Engine](./images/nvidia-triton-server-inference-engine.png)
+    ![Nvidia Triton Server Inference Engine](./images/nvidia-triton-server-inference-engine.png)
 
-The parameters used to configure the Triton Service are the following:
+    The parameters used to configure the Triton Service are the following:
 
-- **Nvidia Triton Server address**: the address of the Nvidia Triton Server.
-- **Nvidia Triton Server ports**: the ports used to connect to the server for HTTP, GRPC, and Metrics services.
-- **Inference Models**: a comma-separated list of inference model names that the server will load. The models have to be already present in the filesystem where the server is running. This option simply tells the server to load the given models from a local or remote repository.
-- **Timeout (in seconds) for time consuming tasks**: Timeout (in seconds) for time consuming tasks like server startup, shutdown or model load. If the task exceeds the timeout, the operation will be terminated with an error.
-- **Max. GRPC message size (bytes)**: this field controls the maximum allowed size for the GRPC calls to the server instance. By default, size of 4194304 bytes (= 4.19 MB) is used. Increase this value to be able to send large amounts of data as input to the Triton server (like Full HD images). The Kura logs will show the following error when exceeding such limit:
+    - **Nvidia Triton Server address**: the address of the Nvidia Triton Server.
+    - **Nvidia Triton Server ports**: the ports used to connect to the server for HTTP, GRPC, and Metrics services.
+    - **Inference Models**: a comma-separated list of inference model names that the server will load. The models have to be already present in the filesystem where the server is running. This option simply tells the server to load the given models from a local or remote repository.
+    - **Timeout (in seconds) for time consuming tasks**: Timeout (in seconds) for time consuming tasks like server startup, shutdown or model load. If the task exceeds the timeout, the operation will be terminated with an error.
+    - **Max. GRPC message size (bytes)**: this field controls the maximum allowed size for the GRPC calls to the server instance. By default, size of 4194304 bytes (= 4.19 MB) is used. Increase this value to be able to send large amounts of data as input to the Triton server (like Full HD images). The Kura logs will show the following error when exceeding such limit:
+        ```
+        io.grpc.StatusRuntimeException: RESOURCE_EXHAUSTED: gRPC message exceeds maximum size 4194304
+        ```
+
+    !!! note
+        Pay attention on the ports used for communicating with the Triton Server. The default ports are the 8000-8002, but these are tipically used by Kura for debug purposes.
+
+=== "Triton Server Native Service"
+
+    ### Triton Server Native Service component
+    
+    The Kura Triton Server component is the implementation of the inference engine APIs and provides methods for interacting with a local native Nvidia™ Triton Server. As presented below, the component enables the user to configure a local server running on the gateway and handles its lifecycle. This operating mode supports more features for interacting with the server like the [AI Model Encryption](#ai-model-encryption-support).
+
+    !!! note
+        **Requirement*: `tritonserver` executable needs to be available in the path to the `kurad` user. Be sure to have a working Triton Server installation before configuring the local native Triton Server instance through Kura UI.
+
+    The parameters used to configure the Triton Service are the following:
+
+    - **Nvidia Triton Server ports**: the ports used to connect to the server for HTTP, GRPC, and Metrics services.
+    - **Local model repository path**: Specify the path on the filesystem where the models are stored.
+    - **Local model decryption password**: Specify the password to be used for decrypting models stored in the model repository. If none is specified, models are supposed to be plaintext.
+    - **Inference Models**: a comma-separated list of inference model names that the server will load. The models have to be already present in the filesystem where the server is running. This option simply tells the server to load the given models from a local or remote repository.
+    - **Local backends path**: Specify the path on the filesystem where the backends are stored.
+    - **Optional configuration for the local backends**: A semi-colon separated list of configuration for the backends. i.e. tensorflow,version=2;tensorflow,allow-soft-placement=false 
+    - **Timeout (in seconds) for time consuming tasks**: Timeout (in seconds) for time consuming tasks like server startup, shutdown or model load. If the task exceeds the timeout, the operation will be terminated with an error.
+    - **Max. GRPC message size (bytes)**: this field controls the maximum allowed size for the GRPC calls to the server instance.
+
+    !!! note
+        Pay attention on the ports used for communicating with the Triton Server. The default ports are the 8000-8002, but these are tipically used by Kura for debug purposes.
+
+=== "Triton Server Container Service"
+
+    ### Triton Server Container Service component
+
+    The Kura Triton Server component is the implementation of the inference engine APIs and provides methods for interacting with a local container running the Nvidia™ Triton Server. As presented below, the component enables the user to configure a local server running on the gateway and handles its lifecycle. This operating mode supports more features for interacting with the server like the [AI Model Encryption](#ai-model-encryption-support).
+
+    !!! note
+        **Requirements**:
+
+        1. Triton Server container image already installed on the device. For instructions refer to the installation section in this page.
+        2. Kura's Container Orchestration Service enabled.
+
+    The parameters used to configure the Triton Service are the following:
+
+    - **Container Image**: The image the container will be created with.
+    - **Container Image Tag**: Describes which image version that should be used for creating the container.
+    - **Nvidia Triton Server ports**: the ports used to connect to the server for HTTP, GRPC, and Metrics services.
+    - **Local model repository path**: Specify the path on the filesystem where the models are stored.
+    - **Local model decryption password**: Specify the password to be used for decrypting models stored in the model repository. If none is specified, models are supposed to be plaintext.
+    - **Inference Models**: a comma-separated list of inference model names that the server will load. The models have to be already present in the filesystem where the server is running. This option simply tells the server to load the given models from a local or remote repository.
+    - **Optional configuration for the local backends**: A semi-colon separated list of configuration for the backends. i.e. tensorflow,version=2;tensorflow,allow-soft-placement=false 
+    - **Memory**: The maximum amount of memory the container can use in bytes. Set it as a positive integer, optionally followed by a suffix of b, k, m, g, to indicate bytes, kilobytes, megabytes, or gigabytes. The minimum allowed value is platform dependent (i.e. 6m). If left empty, the memory assigned to the container will be set to a default value by the native container orchestrator.
+    - **CPUs**: Specify how many CPUs the Triton container can use. Decimal values are allowed, so if set to 1.5, the container will use at most one and a half cpu resource.
+    - **GPUs**: Specify how many Nvidia GPUs the Triton container can use. Allowed values are 'all' or an integer number. If there's no Nvidia GPU installed, leave the field empty.
+    - **Timeout (in seconds) for time consuming tasks**: Timeout (in seconds) for time consuming tasks like server startup, shutdown or model load. If the task exceeds the timeout, the operation will be terminated with an error.
+    - **Max. GRPC message size (bytes)**: this field controls the maximum allowed size for the GRPC calls to the server instance.
+
+    !!! note
+        Pay attention on the ports used for communicating with the Triton Server. The default ports are the 8000-8002, but these are typically used by Kura for debug purposes.
+
+=== "Triton Server Service [deprecated since 5.2.0]"
+
+    ### Triton Server Service component [deprecated since 5.2.0]
+
+    The Kura Triton Server component is the implementation of the inference engine APIs and provides methods for interacting with a local or remote Nvidia™ Triton Server. As presented below, the component enables the user to configure a local server running on the gateway or to communicate to an external server to load specific models.
+
+    The parameters used to configure the Triton Service are the following:
+
+    - **Local Nvidia Triton Server**: If enabled, a local native Nvidia Triton Server is started on the gateway. In this case, the model repository and backends path are mandatory. Moreover, the server address property is overridden and set to localhost. Be aware that the Triton Server has to be already installed on the system.
+    - **Nvidia Triton Server address**: the address of the Nvidia Triton Server.
+    - **Nvidia Triton Server ports**: the ports used to connect to the server for HTTP, GRPC, and Metrics services.
+    - **Local model repository path**: Only for a local instance, specify the path on the filesystem where the models are stored.
+    - **Local model decryption password**: Only for local instance, specify the password to be used for decrypting models stored in the model repository. If none is specified, models are supposed to be plaintext.
+    - **Inference Models**: a comma-separated list of inference model names that the server will load. The models have to be already present in the filesystem where the server is running. This option simply tells the server to load the given models from a local or remote repository.
+    - **Local backends path**: Only for a local instance, specify the path on the filesystem where the backends are stored.
+    - **Optional configuration for the local backends**: Only for local instance, a semi-colon separated list of configuration for the backends. i.e. tensorflow,version=2;tensorflow,allow-soft-placement=false 
+    - **Timeout (in seconds) for time consuming tasks**: Timeout (in seconds) for time consuming tasks like server startup, shutdown or model load. If the task exceeds the timeout, the operation will be terminated with an error.
+    - **Max. GRPC message size (bytes)**: this field controls the maximum allowed size for the GRPC calls to the server instance.
+
+    !!! note
+        Pay attention on the ports used for communicating with the Triton Server. The default ports are the 8000-8002, but these are tipically used by Kura for debug purposes.
+
+    ### Configuration for a local native Triton Server with Triton Server Service component [deprecated since 5.2.0]
+
+    !!! note
+        **Requirement**: `tritonserver` executable needs to be available in the path to the `kurad` user. Be sure to have a working Triton Server installation before configuring the local native Triton Server instance through Kura UI.
+
+    When the **Local Nvidia Triton Server** option is set to true, a local instance of the Nvidia™ Triton Server is started on the gateway. The following configuration is required:
+
+    - **Local Nvidia Triton Server**: true
+    - **Nvidia Triton Server address**: localhost
+    - **Nvidia Triton Server ports**: mandatory
+    - **Local model repository path**: mandatory
+    - **Inference Models**: mandatory. Note that the models have to be already present on the filesystem.
+    - **Local backends path**: mandatory
+
+    The typical command used to start the Triton Server is like this:
+
+    ```shell
+    tritonserver --model-repository=<model_repository_path> \
+    --backend-directory=<backend_repository_path> \
+    --backend-config=<backend_config> \
+    --http-port=<http_port> \
+    --grpc-port=<grpc_port> \
+    --metrics-port=<metrics_port> \
+    --model-control-mode=explicit \
+    --load-model=<model_name_1> \
+    --load-model=<model_name_2> \
+    ...
     ```
-    io.grpc.StatusRuntimeException: RESOURCE_EXHAUSTED: gRPC message exceeds maximum size 4194304
+
+    ### Configuration for a local Triton Server running in a Docker container with Triton Server Service component [deprecated since 5.2.0]
+
+    If the Nvidia™ Triton Server is running as a Docker container in the gateway, the following configuration is required:
+
+    - **Local Nvidia Triton Server**: false
+    - **Nvidia Triton Server address**: localhost
+    - **Nvidia Triton Server ports**: \<mandatory\>
+    - **Inference Models**: \<mandatory\>. The models have to be already present on the filesystem.
+
+    In order to correctly load the models at runtime, configure the server with the `--model-control-mode=explicit` option. The typical command used for running the docker container is as follows. Note the forward of the ports to not interfere with Kura.
+
+    ```shell
+    docker run --rm \
+    -p4000:8000 \
+    -p4001:8001 \
+    -p4002:8002 \
+    --shm-size=150m \
+    -v path/to/models:/models \
+    nvcr.io/nvidia/tritonserver:[version] \
+    tritonserver --model-repository=/models --model-control-mode=explicit
     ```
 
-!!! note
-    Pay attention on the ports used for communicating with the Triton Server. The default ports are the 8000-8002, but these are tipically used by Kura for debug purposes.
+    ### Configuration for a remote Triton Server with Triton Server Service component [deprecated since 5.2.0]
 
+    When the Nvidia™ Triton Server is running on a remote server, the following configuration is needed:
 
-
-## Triton Server Native Service component
-
-The Kura Triton Server component is the implementation of the inference engine APIs and provides methods for interacting with a local native Nvidia™ Triton Server. As presented below, the component enables the user to configure a local server running on the gateway and handles its lifecycle. This operating mode supports more features for interacting with the server like the [AI Model Encryption](#ai-model-encryption-support).
-
-!!! note
-    **Requirement**: `tritonserver` executable needs to be available in the path to the `kurad` user. Be sure to have a working Triton Server installation before configuring the local native Triton Server instance through Kura UI.
-
-The parameters used to configure the Triton Service are the following:
-
-- **Nvidia Triton Server ports**: the ports used to connect to the server for HTTP, GRPC, and Metrics services.
-- **Local model repository path**: Specify the path on the filesystem where the models are stored.
-- **Local model decryption password**: Specify the password to be used for decrypting models stored in the model repository. If none is specified, models are supposed to be plaintext.
-- **Inference Models**: a comma-separated list of inference model names that the server will load. The models have to be already present in the filesystem where the server is running. This option simply tells the server to load the given models from a local or remote repository.
-- **Local backends path**: Specify the path on the filesystem where the backends are stored.
-- **Optional configuration for the local backends**: A semi-colon separated list of configuration for the backends. i.e. tensorflow,version=2;tensorflow,allow-soft-placement=false 
-- **Timeout (in seconds) for time consuming tasks**: Timeout (in seconds) for time consuming tasks like server startup, shutdown or model load. If the task exceeds the timeout, the operation will be terminated with an error.
-- **Max. GRPC message size (bytes)**: this field controls the maximum allowed size for the GRPC calls to the server instance.
-
-!!! note
-    Pay attention on the ports used for communicating with the Triton Server. The default ports are the 8000-8002, but these are tipically used by Kura for debug purposes.
-
-
-
-## Triton Server Container Service component
-
-The Kura Triton Server component is the implementation of the inference engine APIs and provides methods for interacting with a local container running the Nvidia™ Triton Server. As presented below, the component enables the user to configure a local server running on the gateway and handles its lifecycle. This operating mode supports more features for interacting with the server like the [AI Model Encryption](#ai-model-encryption-support).
-
-!!! note
-    **Requirement**:
-    1. Triton Server container image already installed on the device. For instructions refer to the installation section in this page.
-    2. Kura's Container Orchestration Service enabled.
-
-The parameters used to configure the Triton Service are the following:
-
-- **Container Image**: The image the container will be created with.
-- **Container Image Tag**: Describes which image version that should be used for creating the container.
-- **Nvidia Triton Server ports**: the ports used to connect to the server for HTTP, GRPC, and Metrics services.
-- **Local model repository path**: Specify the path on the filesystem where the models are stored.
-- **Local model decryption password**: Specify the password to be used for decrypting models stored in the model repository. If none is specified, models are supposed to be plaintext.
-- **Inference Models**: a comma-separated list of inference model names that the server will load. The models have to be already present in the filesystem where the server is running. This option simply tells the server to load the given models from a local or remote repository.
-- **Optional configuration for the local backends**: A semi-colon separated list of configuration for the backends. i.e. tensorflow,version=2;tensorflow,allow-soft-placement=false 
-- **Memory**: The maximum amount of memory the container can use in bytes. Set it as a positive integer, optionally followed by a suffix of b, k, m, g, to indicate bytes, kilobytes, megabytes, or gigabytes. The minimum allowed value is platform dependent (i.e. 6m). If left empty, the memory assigned to the container will be set to a default value by the native container orchestrator.
-- **CPUs**: Specify how many CPUs the Triton container can use. Decimal values are allowed, so if set to 1.5, the container will use at most one and a half cpu resource.
-- **GPUs**: Specify how many Nvidia GPUs the Triton container can use. Allowed values are 'all' or an integer number. If there's no Nvidia GPU installed, leave the field empty.
-- **Timeout (in seconds) for time consuming tasks**: Timeout (in seconds) for time consuming tasks like server startup, shutdown or model load. If the task exceeds the timeout, the operation will be terminated with an error.
-- **Max. GRPC message size (bytes)**: this field controls the maximum allowed size for the GRPC calls to the server instance.
-
-!!! note
-    Pay attention on the ports used for communicating with the Triton Server. The default ports are the 8000-8002, but these are typically used by Kura for debug purposes.
-
-
-
-## Triton Server Service component [deprecated since 5.2.0]
-
-The Kura Triton Server component is the implementation of the inference engine APIs and provides methods for interacting with a local or remote Nvidia™ Triton Server. As presented below, the component enables the user to configure a local server running on the gateway or to communicate to an external server to load specific models.
-
-The parameters used to configure the Triton Service are the following:
-
-- **Local Nvidia Triton Server**: If enabled, a local native Nvidia Triton Server is started on the gateway. In this case, the model repository and backends path are mandatory. Moreover, the server address property is overridden and set to localhost. Be aware that the Triton Server has to be already installed on the system.
-- **Nvidia Triton Server address**: the address of the Nvidia Triton Server.
-- **Nvidia Triton Server ports**: the ports used to connect to the server for HTTP, GRPC, and Metrics services.
-- **Local model repository path**: Only for a local instance, specify the path on the filesystem where the models are stored.
-- **Local model decryption password**: Only for local instance, specify the password to be used for decrypting models stored in the model repository. If none is specified, models are supposed to be plaintext.
-- **Inference Models**: a comma-separated list of inference model names that the server will load. The models have to be already present in the filesystem where the server is running. This option simply tells the server to load the given models from a local or remote repository.
-- **Local backends path**: Only for a local instance, specify the path on the filesystem where the backends are stored.
-- **Optional configuration for the local backends**: Only for local instance, a semi-colon separated list of configuration for the backends. i.e. tensorflow,version=2;tensorflow,allow-soft-placement=false 
-- **Timeout (in seconds) for time consuming tasks**: Timeout (in seconds) for time consuming tasks like server startup, shutdown or model load. If the task exceeds the timeout, the operation will be terminated with an error.
-- **Max. GRPC message size (bytes)**: this field controls the maximum allowed size for the GRPC calls to the server instance.
-
-!!! note
-    Pay attention on the ports used for communicating with the Triton Server. The default ports are the 8000-8002, but these are tipically used by Kura for debug purposes.
-
-### Configuration for a local native Triton Server with Triton Server Service component [deprecated since 5.2.0]
-
-!!! note
-    **Requirement**: `tritonserver` executable needs to be available in the path to the `kurad` user. Be sure to have a working Triton Server installation before configuring the local native Triton Server instance through Kura UI.
-
-When the **Local Nvidia Triton Server** option is set to true, a local instance of the Nvidia™ Triton Server is started on the gateway. The following configuration is required:
-
-- **Local Nvidia Triton Server**: true
-- **Nvidia Triton Server address**: localhost
-- **Nvidia Triton Server ports**: mandatory
-- **Local model repository path**: mandatory
-- **Inference Models**: mandatory. Note that the models have to be already present on the filesystem.
-- **Local backends path**: mandatory
-
-The typical command used to start the Triton Server is like this:
-
-```shell
-tritonserver --model-repository=<model_repository_path> \
---backend-directory=<backend_repository_path> \
---backend-config=<backend_config> \
---http-port=<http_port> \
---grpc-port=<grpc_port> \
---metrics-port=<metrics_port> \
---model-control-mode=explicit \
---load-model=<model_name_1> \
---load-model=<model_name_2> \
-...
-```
-
-### Configuration for a local Triton Server running in a Docker container with Triton Server Service component [deprecated since 5.2.0]
-
-If the Nvidia™ Triton Server is running as a Docker container in the gateway, the following configuration is required:
-
-- **Local Nvidia Triton Server**: false
-- **Nvidia Triton Server address**: localhost
-- **Nvidia Triton Server ports**: \<mandatory\>
-- **Inference Models**: \<mandatory\>. The models have to be already present on the filesystem.
-
-In order to correctly load the models at runtime, configure the server with the `--model-control-mode=explicit` option. The typical command used for running the docker container is as follows. Note the forward of the ports to not interfere with Kura.
-
-```shell
-docker run --rm \
--p4000:8000 \
--p4001:8001 \
--p4002:8002 \
---shm-size=150m \
--v path/to/models:/models \
-nvcr.io/nvidia/tritonserver:[version] \
-tritonserver --model-repository=/models --model-control-mode=explicit
-```
-
-### Configuration for a remote Triton Server with Triton Server Service component [deprecated since 5.2.0]
-
-When the Nvidia™ Triton Server is running on a remote server, the following configuration is needed:
-
- - **Local Nvidia Triton Server**: false
- - **Nvidia Triton Server address**: mandatory
- - **Nvidia Triton Server ports**: mandatory
- - ** Inference Models**: mandatory. The models have to be already present on the filesystem.
+     - **Local Nvidia Triton Server**: false
+     - **Nvidia Triton Server address**: mandatory
+     - **Nvidia Triton Server ports**: mandatory
+     - ** Inference Models**: mandatory. The models have to be already present on the filesystem.
 
 
 
