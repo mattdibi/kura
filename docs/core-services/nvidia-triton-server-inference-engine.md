@@ -228,7 +228,10 @@ For ensuring inference integrity and providing copyright protection of deep-lear
 
 Once the development of the deep-learning model is complete, the developer who wants to deploy the model on the edge device in a secure manner can proceed with encrypting the Triton model using the procedure detailed below. After encrypting the model he/she can transfer the file on the edge device using his/her preferred method.
 
-![Nvidia Triton Server Inference Engine Model Encyption](./images/nvidia-triton-server-inference-engine-model-encryption.png)
+<figure markdown>
+  ![Nvidia Triton Server Inference Engine Model Encyption](./images/nvidia-triton-server-inference-engine-model-encryption.png)
+  <figcaption></figcaption>
+</figure>
 
 Kura will keep the stored model protected at all times and have the model decrypted **in runtime only** for use by the Inference Server Runtime. As soon as the model is correctly loaded into memory the decrypted model will be removed from the filesystem.
 
