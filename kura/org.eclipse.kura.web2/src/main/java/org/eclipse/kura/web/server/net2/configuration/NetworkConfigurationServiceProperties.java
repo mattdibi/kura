@@ -108,7 +108,6 @@ public class NetworkConfigurationServiceProperties {
                 return NetworkUtil.getNetmaskStringForm(prefix.intValue());
             }
         }
-
         return "";
     }
 
