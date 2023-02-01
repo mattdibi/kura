@@ -133,10 +133,9 @@ public class NetworkPropertiesTest {
 	public void whenNetworkPropsIsCreated() {
 		netProps = new NetworkProperties(this.properties);
 	}
-	
+
 	// End of When //
 
-	
 	// Then //
 	public void thenGetReturnsExpectedObjectWithKey(String key) {
 		assertEquals(this.netProps.get(String.class, key, ""), properties.get(key));
