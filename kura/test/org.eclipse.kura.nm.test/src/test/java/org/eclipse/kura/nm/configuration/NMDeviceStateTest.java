@@ -109,79 +109,79 @@ public class NMDeviceStateTest {
 	@Test
 	public void shouldReturnConnectionFalseUnknown() {
 		whenStateIsSetTo(NMDeviceState.NM_DEVICE_STATE_UNKNOWN);
-		thenStateShouldBeEqualTo(false);
+		thenIsConnectShouldReturn(false);
 	}
 
 	@Test
 	public void shouldReturnConnectionFalseUnmanaged() {
 		whenStateIsSetTo(NMDeviceState.NM_DEVICE_STATE_UNMANAGED);
-		thenStateShouldBeEqualTo(false);
+		thenIsConnectShouldReturn(false);
 	}
 
 	@Test
 	public void shouldReturnConnectionFalseUnavailable() {
 		whenStateIsSetTo(NMDeviceState.NM_DEVICE_STATE_UNAVAILABLE);
-		thenStateShouldBeEqualTo(false);
+		thenIsConnectShouldReturn(false);
 	}
 
 	@Test
 	public void shouldReturnConnectionFalseDisconnected() {
 		whenStateIsSetTo(NMDeviceState.NM_DEVICE_STATE_DISCONNECTED);
-		thenStateShouldBeEqualTo(false);
+		thenIsConnectShouldReturn(false);
 	}
 
 	@Test
 	public void shouldReturnConnectionTruePrepare() {
 		whenStateIsSetTo(NMDeviceState.NM_DEVICE_STATE_PREPARE);
-		thenStateShouldBeEqualTo(true);
+		thenIsConnectShouldReturn(true);
 	}
 
 	@Test
 	public void shouldReturnConnectionTrueConfig() {
 		whenStateIsSetTo(NMDeviceState.NM_DEVICE_STATE_CONFIG);
-		thenStateShouldBeEqualTo(true);
+		thenIsConnectShouldReturn(true);
 	}
 
 	@Test
 	public void shouldReturnConnectionTrueNeedAuth() {
 		whenStateIsSetTo(NMDeviceState.NM_DEVICE_STATE_NEED_AUTH);
-		thenStateShouldBeEqualTo(true);
+		thenIsConnectShouldReturn(true);
 	}
 
 	@Test
 	public void shouldReturnConnectionTrueIpConfig() {
 		whenStateIsSetTo(NMDeviceState.NM_DEVICE_STATE_IP_CONFIG);
-		thenStateShouldBeEqualTo(true);
+		thenIsConnectShouldReturn(true);
 	}
 
 	@Test
 	public void shouldReturnConnectionTrueIpCheck() {
 		whenStateIsSetTo(NMDeviceState.NM_DEVICE_STATE_IP_CHECK);
-		thenStateShouldBeEqualTo(true);
+		thenIsConnectShouldReturn(true);
 	}
 
 	@Test
 	public void shouldReturnConnectionTrueSecondaries() {
 		whenStateIsSetTo(NMDeviceState.NM_DEVICE_STATE_SECONDARIES);
-		thenStateShouldBeEqualTo(true);
+		thenIsConnectShouldReturn(true);
 	}
 
 	@Test
 	public void shouldReturnConnectionTrueActivated() {
 		whenStateIsSetTo(NMDeviceState.NM_DEVICE_STATE_ACTIVATED);
-		thenStateShouldBeEqualTo(true);
+		thenIsConnectShouldReturn(true);
 	}
 
 	@Test
 	public void shouldReturnConnectionTrueDeactivating() {
 		whenStateIsSetTo(NMDeviceState.NM_DEVICE_STATE_DEACTIVATING);
-		thenStateShouldBeEqualTo(true);
+		thenIsConnectShouldReturn(true);
 	}
 
 	@Test
 	public void shouldReturnConnectionTrueFailed() {
 		whenStateIsSetTo(NMDeviceState.NM_DEVICE_STATE_FAILED);
-		thenStateShouldBeEqualTo(true);
+		thenIsConnectShouldReturn(true);
 	}
 
 	public void whenInt32StateIsPassed(UInt32 type) {
@@ -196,7 +196,7 @@ public class NMDeviceStateTest {
 		assertEquals(state, type);
 	}
 
-	public void thenStateShouldBeEqualTo(Boolean bool) {
+	public void thenIsConnectShouldReturn(Boolean bool) {
 		assertEquals(NMDeviceState.isConnected(state), bool);
 	}
 
