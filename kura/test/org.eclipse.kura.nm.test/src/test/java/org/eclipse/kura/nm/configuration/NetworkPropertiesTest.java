@@ -22,91 +22,91 @@ public class NetworkPropertiesTest {
 
 	@Test
 	public void shouldReturnPropertiesWithGetProperties() {
-		givenTheTestProperties();
+		givenTheMapWith("testKey1", "testString1");
 		whenNetworkPropsIsCreated();
 		thenCompareGetPropertiesToPassedProperties();
 	}
 
 	@Test
 	public void shouldReturnStringWithGet() {
-		givenTheTestProperties();
+		givenTheMapWith("testKey1", "testString1");
 		whenNetworkPropsIsCreated();
 		thenGetReturnsExpectedObjectWithKey("testKey1");
 	}
 
 	@Test
 	public void shouldReturnStringWithGetOpt() {
-		givenTheTestProperties();
+		givenTheMapWith("testKey1", "testString1");
 		whenNetworkPropsIsCreated();
 		thenGetOptReturnsExpectedObjectWithKey("testKey1");
 	}
 
 	@Test
 	public void shouldReturnEmptyGetOptEmpty() {
-		givenTheTestProperties();
+		givenTheMapWith("testKeyEmpty", "");
 		whenNetworkPropsIsCreated();
 		thenGetOptReturnsExpectedEmptyWithKey("testKeyEmpty");
 	}
 
 	@Test
 	public void shouldReturnEmptyGetOptNull() {
-		givenTheTestProperties();
+		givenTheMapWith("testKeyNull", null);
 		whenNetworkPropsIsCreated();
 		thenGetOptReturnsExpectedEmptyWithKey("testKeyNull");
 	}
 
 	@Test
 	public void shouldReturnEmptyGetOptEmptyKey() {
-		givenTheTestProperties();
+		givenTheMapWith("testKeyNull", null);
 		whenNetworkPropsIsCreated();
 		thenGetOptReturnsExpectedEmptyWithKey("");
 	}
 
 	@Test
 	public void shouldReturnStringListGetStringListWithCommaSeperatedString() {
-		givenTheTestProperties();
+		givenTheMapWith("testKey-comma-seperated", "commaSeperated1,commaSeperated2,commaSeperated3");
 		whenNetworkPropsIsCreated();
 		thenReturnStringListFromGetStringList("testKey-comma-seperated");
 	}
 
 	@Test
 	public void shouldReturnStringListGetStringListWithRegularString() {
-		givenTheTestProperties();
+		givenTheMapWith("testKey1", "testString1");
 		whenNetworkPropsIsCreated();
 		thenReturnStringFromGetStringList("testKey1");
 	}
 
 	@Test
 	public void shouldReturnStringListGetStringListWithNull() {
-		givenTheTestProperties();
+		givenTheMapWith("testKeyNull", null);
 		whenNetworkPropsIsCreated();
 		thenReturnEmptyListFromGetStringList("testKeyNull");
 	}
 
 	@Test
 	public void shouldReturnOptionalStringListGetStringListOptWithCommaSeperatedString() {
-		givenTheTestProperties();
+		givenTheMapWith("testKey-comma-seperated", "commaSeperated1,commaSeperated2,commaSeperated3");
 		whenNetworkPropsIsCreated();
 		thenReturnOptStringListOptFromGetStringList("testKey-comma-seperated");
 	}
 
 	@Test
 	public void shouldReturnOptionalStringListGetStringListOptWithString() {
-		givenTheTestProperties();
+		givenTheMapWith("testKey1", "testString1");
 		whenNetworkPropsIsCreated();
 		thenReturnOptStringOptFromGetStringList("testKey1");
 	}
 
 	@Test
 	public void shouldReturnEmptyGetStringListOptWithNull() {
-		givenTheTestProperties();
+		givenTheMapWith("testKeyNull", null);
 		whenNetworkPropsIsCreated();
 		thenReturnOptEmptyOptFromGetStringList("testKeyNull");
 	}
 
 	@Test
 	public void shouldReturnEmptyGetStringListOptWithNoKey() {
-		givenTheTestProperties();
+		givenTheMapWith("testKeyNull", null);
 		whenNetworkPropsIsCreated();
 		thenReturnOptEmptyOptFromGetStringList("");
 	}
@@ -115,16 +115,10 @@ public class NetworkPropertiesTest {
 	public void givenTheFollowingProperties(Map<String, Object> properties) {
 		this.properties = properties;
 	}
-
-	public void givenTheTestProperties() {
-
+	
+	public void givenTheMapWith(String key, Object pair) {
 		properties = new HashMap<String, Object>();
-		properties.put("testKey1", "testString1");
-		properties.put("testKey-comma-seperated", "commaSeperated1,commaSeperated2,commaSeperated3");
-		properties.put("testKey3", 345);
-		properties.put("testKey3", 345);
-		properties.put("testKeyEmpty", "");
-		properties.put("testKeyNull", null);
+		properties.put(key, pair);
 	}
 	// End of Given //
 
