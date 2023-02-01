@@ -70,7 +70,7 @@ public class NetworkPropertiesTest {
 	public void shouldReturnEmptyGetOptEmptyKey() {
 		givenTheMapWith("testKeyNull", null);
 		givenNetworkPropsIsCreated();
-		whenGetOptIsCalledWith("testKeyNull", String.class);
+		whenGetOptIsCalledWith("", String.class);
 		thenResultEquals(Optional.empty());
 	}
 
@@ -144,7 +144,7 @@ public class NetworkPropertiesTest {
 	public void shouldReturnEmptyGetStringListOptWithNoKey() {
 		givenTheMapWith("testKeyNull", null);
 		givenNetworkPropsIsCreated();
-		whenGetStringListOptIsCalledWith("testKeyNull");
+		whenGetStringListOptIsCalledWith("");
 		thenResultEquals(Optional.empty());
 	}
 
