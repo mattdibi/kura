@@ -25,85 +25,85 @@ public class NMDeviceStateTest {
 	@Test
 	public void conversionWorksForStateUnknown() {
 		whenInt32StateIsPassed(new UInt32(0));
-		thenCorrectStateIsReturned(NMDeviceState.NM_DEVICE_STATE_UNKNOWN);
+		thenStateShouldBeEqualTo(NMDeviceState.NM_DEVICE_STATE_UNKNOWN);
 	}
 
 	@Test
 	public void conversionWorksForStateUnmanaged() {
 		whenInt32StateIsPassed(new UInt32(10));
-		thenCorrectStateIsReturned(NMDeviceState.NM_DEVICE_STATE_UNMANAGED);
+		thenStateShouldBeEqualTo(NMDeviceState.NM_DEVICE_STATE_UNMANAGED);
 	}
 
 	@Test
 	public void conversionWorksForStateUnavailable() {
 		whenInt32StateIsPassed(new UInt32(20));
-		thenCorrectStateIsReturned(NMDeviceState.NM_DEVICE_STATE_UNAVAILABLE);
+		thenStateShouldBeEqualTo(NMDeviceState.NM_DEVICE_STATE_UNAVAILABLE);
 	}
 
 	@Test
 	public void conversionWorksForStateDisconnected() {
 		whenInt32StateIsPassed(new UInt32(30));
-		thenCorrectStateIsReturned(NMDeviceState.NM_DEVICE_STATE_DISCONNECTED);
+		thenStateShouldBeEqualTo(NMDeviceState.NM_DEVICE_STATE_DISCONNECTED);
 	}
 
 	@Test
 	public void conversionWorksForStatePrepare() {
 		whenInt32StateIsPassed(new UInt32(40));
-		thenCorrectStateIsReturned(NMDeviceState.NM_DEVICE_STATE_PREPARE);
+		thenStateShouldBeEqualTo(NMDeviceState.NM_DEVICE_STATE_PREPARE);
 	}
 
 	@Test
 	public void conversionWorksForStateConfig() {
 		whenInt32StateIsPassed(new UInt32(50));
-		thenCorrectStateIsReturned(NMDeviceState.NM_DEVICE_STATE_CONFIG);
+		thenStateShouldBeEqualTo(NMDeviceState.NM_DEVICE_STATE_CONFIG);
 	}
 
 	@Test
 	public void conversionWorksForStateNeedAuth() {
 		whenInt32StateIsPassed(new UInt32(60));
-		thenCorrectStateIsReturned(NMDeviceState.NM_DEVICE_STATE_NEED_AUTH);
+		thenStateShouldBeEqualTo(NMDeviceState.NM_DEVICE_STATE_NEED_AUTH);
 	}
 
 	@Test
 	public void conversionWorksForStateIpConfig() {
 		whenInt32StateIsPassed(new UInt32(70));
-		thenCorrectStateIsReturned(NMDeviceState.NM_DEVICE_STATE_IP_CONFIG);
+		thenStateShouldBeEqualTo(NMDeviceState.NM_DEVICE_STATE_IP_CONFIG);
 	}
 
 	@Test
 	public void conversionWorksForStateIpCheck() {
 		whenInt32StateIsPassed(new UInt32(80));
-		thenCorrectStateIsReturned(NMDeviceState.NM_DEVICE_STATE_IP_CHECK);
+		thenStateShouldBeEqualTo(NMDeviceState.NM_DEVICE_STATE_IP_CHECK);
 	}
 
 	@Test
 	public void conversionWorksForStateSecondaries() {
 		whenInt32StateIsPassed(new UInt32(90));
-		thenCorrectStateIsReturned(NMDeviceState.NM_DEVICE_STATE_SECONDARIES);
+		thenStateShouldBeEqualTo(NMDeviceState.NM_DEVICE_STATE_SECONDARIES);
 	}
 
 	@Test
 	public void conversionWorksForStateActivated() {
 		whenInt32StateIsPassed(new UInt32(100));
-		thenCorrectStateIsReturned(NMDeviceState.NM_DEVICE_STATE_ACTIVATED);
+		thenStateShouldBeEqualTo(NMDeviceState.NM_DEVICE_STATE_ACTIVATED);
 	}
 
 	@Test
 	public void conversionWorksForStateDeactivating() {
 		whenInt32StateIsPassed(new UInt32(110));
-		thenCorrectStateIsReturned(NMDeviceState.NM_DEVICE_STATE_DEACTIVATING);
+		thenStateShouldBeEqualTo(NMDeviceState.NM_DEVICE_STATE_DEACTIVATING);
 	}
 
 	@Test
 	public void conversionWorksForStateFailed() {
 		whenInt32StateIsPassed(new UInt32(120));
-		thenCorrectStateIsReturned(NMDeviceState.NM_DEVICE_STATE_FAILED);
+		thenStateShouldBeEqualTo(NMDeviceState.NM_DEVICE_STATE_FAILED);
 	}
 
 	@Test
 	public void conversionWorksForStateUnknownDefault() {
 		whenInt32StateIsPassed(new UInt32(121));
-		thenCorrectStateIsReturned(NMDeviceState.NM_DEVICE_STATE_UNKNOWN);
+		thenStateShouldBeEqualTo(NMDeviceState.NM_DEVICE_STATE_UNKNOWN);
 	}
 
 	@Test
@@ -192,7 +192,7 @@ public class NMDeviceStateTest {
 		state = type;
 	}
 
-	public void thenCorrectStateIsReturned(NMDeviceState type) {
+	public void thenStateShouldBeEqualTo(NMDeviceState type) {
 		assertEquals(state, type);
 	}
 
