@@ -57,6 +57,22 @@ public class NetworkPropertiesTest {
 		whenGetIsCalledWith("testKey1", String.class);
 		thenResultEquals("testString1");
 	}
+	
+	@Test
+	public void shouldReturnStringWithGetNull() {
+		givenTheMapWith("testKey1", null);
+		givenNetworkPropsIsCreated();
+		whenGetIsCalledWith("testKey1", String.class);
+		thenResultEquals((String) null);
+	}
+	
+	@Test
+	public void shouldReturnStringWithGetMissing() {
+		givenTheMapWith("testKey1", null);
+		givenNetworkPropsIsCreated();
+		whenGetIsCalledWith("testKey1-nonExistant", String.class);
+		thenResultEquals((String) null);
+	}
 
 	@Test
 	public void shouldReturnStringWithGetOpt() {
@@ -105,6 +121,22 @@ public class NetworkPropertiesTest {
 		givenNetworkPropsIsCreated();
 		whenGetStringListIsCalledWith("testKey-comma-seperated");
 		thenResultEquals(List.of("commaSeperated1", "commaSeperated2", "commaSeperated3"));
+	}
+	
+	@Test
+	public void shouldReturnStringListGetStringListWithCommaSeperatedStringNull() {
+		givenTheMapWith("testKey-comma-seperated", null);
+		givenNetworkPropsIsCreated();
+		whenGetStringListIsCalledWith("testKey-comma-seperated");
+		thenResultEquals(List.of());
+	}
+	
+	@Test
+	public void shouldReturnStringListGetStringListWithCommaSeperatedStringMissing() {
+		givenTheMapWith("testKey-comma-seperated", null);
+		givenNetworkPropsIsCreated();
+		whenGetStringListIsCalledWith("testKey-comma-seperated-not-existant");
+		thenResultEquals(List.of());
 	}
 
 	@Test
@@ -224,7 +256,7 @@ public class NetworkPropertiesTest {
 	 */
 
 	public void thenResultEquals(String result) {
-		assertEquals(this.stringResult, result);
+		assertEquals(result, this.stringResult);
 	}
 
 	public void thenResultEquals(Map<String, Object> result) {
