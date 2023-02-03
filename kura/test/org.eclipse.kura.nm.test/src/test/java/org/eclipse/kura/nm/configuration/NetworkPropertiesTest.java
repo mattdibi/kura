@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import org.freedesktop.dbus.errors.NotSupported;
@@ -35,6 +36,7 @@ public class NetworkPropertiesTest {
 	Map<String, Object> resultMap;
 
 	Boolean hasNullPointExceptionBeenThrown = false;
+	Boolean hasNoSuchElementExceptionBeenThrown = false;
 
 	@Test
 	public void shouldFailWhenNull() {
@@ -64,7 +66,7 @@ public class NetworkPropertiesTest {
 		givenTheMapWith("testKey1", null);
 		givenNetworkPropsIsCreated();
 		whenGetIsCalledWith("testKey1", String.class);
-		thenResultEquals((String) null);
+		thenAnNoSuchElementExceptionOccured();
 	}
 	
 	@Test
@@ -72,7 +74,7 @@ public class NetworkPropertiesTest {
 		givenTheMapWith("testKey1", null);
 		givenNetworkPropsIsCreated();
 		whenGetIsCalledWith("testKey1-nonExistant", String.class);
-		thenResultEquals((String) null);
+		thenAnNoSuchElementExceptionOccured();
 	}
 
 	@Test
@@ -129,7 +131,7 @@ public class NetworkPropertiesTest {
 		givenTheMapWith("testKey-comma-seperated", null);
 		givenNetworkPropsIsCreated();
 		whenGetStringListIsCalledWith("testKey-comma-seperated");
-		thenResultEquals(Arrays.asList());
+		thenAnNoSuchElementExceptionOccured();
 	}
 	
 	@Test
@@ -137,7 +139,7 @@ public class NetworkPropertiesTest {
 		givenTheMapWith("testKey-comma-seperated", null);
 		givenNetworkPropsIsCreated();
 		whenGetStringListIsCalledWith("testKey-comma-seperated-not-existant");
-		thenResultEquals(Arrays.asList());
+		thenAnNoSuchElementExceptionOccured();
 	}
 
 	@Test
@@ -214,10 +216,14 @@ public class NetworkPropertiesTest {
 
 		try {
 			netProps = new NetworkProperties(this.properties);
+			this.hasNullPointExceptionBeenThrown = false;
+			this.hasNoSuchElementExceptionBeenThrown = false;
 		} catch (NullPointerException e) {
 			this.hasNullPointExceptionBeenThrown = true;
+		} catch (NoSuchElementException e) {
+			this.hasNoSuchElementExceptionBeenThrown = true;			
 		}
-	}
+	} 
 
 	/*
 	 * When
@@ -274,6 +280,9 @@ public class NetworkPropertiesTest {
 
 	public void thenAnNullPointerExceptionOccured() {
 		assertTrue(this.hasNullPointExceptionBeenThrown);
+	}
+	public void thenAnNoSuchElementExceptionOccured() {
+		assertTrue(this.hasNoSuchElementExceptionBeenThrown);
 	}
 
 }
