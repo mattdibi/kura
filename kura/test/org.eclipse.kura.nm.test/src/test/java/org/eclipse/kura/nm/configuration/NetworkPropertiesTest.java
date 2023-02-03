@@ -111,7 +111,7 @@ public class NetworkPropertiesTest {
 		givenTheMapWith("testKey-comma-seperated", "commaSeperated1,commaSeperated2,commaSeperated3");
 		givenNetworkPropsIsCreated();
 		whenGetStringListIsCalledWith("testKey-comma-seperated");
-		thenResultEquals(List.of("commaSeperated1", "commaSeperated2", "commaSeperated3"));
+		thenResultEquals(Arrays.asList("commaSeperated1", "commaSeperated2", "commaSeperated3"));
 	}
 
 	@Test
@@ -120,7 +120,7 @@ public class NetworkPropertiesTest {
 				",,   ,,,commaSeperated1, ,,,,commaSeperated2,   ,,commaSeperated3,");
 		givenNetworkPropsIsCreated();
 		whenGetStringListIsCalledWith("testKey-comma-seperated");
-		thenResultEquals(List.of("commaSeperated1", "commaSeperated2", "commaSeperated3"));
+		thenResultEquals(Arrays.asList("commaSeperated1", "commaSeperated2", "commaSeperated3"));
 	}
 	
 	@Test
@@ -128,7 +128,7 @@ public class NetworkPropertiesTest {
 		givenTheMapWith("testKey-comma-seperated", null);
 		givenNetworkPropsIsCreated();
 		whenGetStringListIsCalledWith("testKey-comma-seperated");
-		thenResultEquals(List.of());
+		thenResultEquals(Arrays.asList());
 	}
 	
 	@Test
@@ -136,7 +136,7 @@ public class NetworkPropertiesTest {
 		givenTheMapWith("testKey-comma-seperated", null);
 		givenNetworkPropsIsCreated();
 		whenGetStringListIsCalledWith("testKey-comma-seperated-not-existant");
-		thenResultEquals(List.of());
+		thenResultEquals(Arrays.asList());
 	}
 
 	@Test
@@ -144,7 +144,7 @@ public class NetworkPropertiesTest {
 		givenTheMapWith("testKey1", "testString1");
 		givenNetworkPropsIsCreated();
 		whenGetStringListIsCalledWith("testKey1");
-		thenResultEquals(List.of("testString1"));
+		thenResultEquals(Arrays.asList("testString1"));
 	}
 
 	@Test
@@ -152,7 +152,7 @@ public class NetworkPropertiesTest {
 		givenTheMapWith("testKeyNull", null);
 		givenNetworkPropsIsCreated();
 		whenGetStringListIsCalledWith("testKeyNull");
-		thenResultEquals(List.of());
+		thenResultEquals(Arrays.asList());
 	}
 
 	@Test
@@ -160,7 +160,7 @@ public class NetworkPropertiesTest {
 		givenTheMapWith("testKey-comma-seperated", "commaSeperated1,commaSeperated2,commaSeperated3");
 		givenNetworkPropsIsCreated();
 		whenGetStringListOptIsCalledWith("testKey-comma-seperated");
-		thenResultEquals(Optional.of(List.of("commaSeperated1", "commaSeperated2", "commaSeperated3")));
+		thenResultEquals(Optional.of(Arrays.asList("commaSeperated1", "commaSeperated2", "commaSeperated3")));
 	}
 
 	@Test
@@ -169,7 +169,7 @@ public class NetworkPropertiesTest {
 				", , ,,,,commaSeperated1, , , ,,,,,commaSeperated2,,,, ,, ,,commaSeperated3,, , ,,,, ,");
 		givenNetworkPropsIsCreated();
 		whenGetStringListOptIsCalledWith("testKey-comma-seperated");
-		thenResultEquals(Optional.of(List.of("commaSeperated1", "commaSeperated2", "commaSeperated3")));
+		thenResultEquals(Optional.of(Arrays.asList("commaSeperated1", "commaSeperated2", "commaSeperated3")));
 	}
 
 	@Test
@@ -177,7 +177,7 @@ public class NetworkPropertiesTest {
 		givenTheMapWith("testKey1", "testString1");
 		givenNetworkPropsIsCreated();
 		whenGetStringListOptIsCalledWith("testKey1");
-		thenResultEquals(Optional.of(List.of("testString1")));
+		thenResultEquals(Optional.of(Arrays.asList("testString1")));
 	}
 
 	@Test
