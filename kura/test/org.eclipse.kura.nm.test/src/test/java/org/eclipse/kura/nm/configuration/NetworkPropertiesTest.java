@@ -13,6 +13,7 @@
 package org.eclipse.kura.nm.configuration;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -32,10 +33,13 @@ public class NetworkPropertiesTest {
 	List<String> stringListResult;
 	Map<String, Object> resultMap;
 
-	@Test(expected = NullPointerException.class)
+	Boolean hasNullPointExceptionBeenThrown = false;
+
+	@Test
 	public void shouldFailWhenNull() {
 		givenNetworkPropertiesBuiltWith(null);
 		givenNetworkPropsIsCreated();
+		thenAnNullPointerExceptionOccured();
 	}
 
 	@Test
@@ -160,7 +164,10 @@ public class NetworkPropertiesTest {
 		thenResultEquals(Optional.empty());
 	}
 
-	// Given //
+	/*
+	 * Given
+	 */
+
 	public void givenNetworkPropertiesBuiltWith(Map<String, Object> properties) {
 		this.properties = properties;
 	}
@@ -171,11 +178,17 @@ public class NetworkPropertiesTest {
 	}
 
 	public void givenNetworkPropsIsCreated() {
-		netProps = new NetworkProperties(this.properties);
-	}
-	// End of Given //
 
-	// When //
+		try {
+			netProps = new NetworkProperties(this.properties);
+		} catch (NullPointerException e) {
+			this.hasNullPointExceptionBeenThrown = true;
+		}
+	}
+
+	/*
+	 * When
+	 */
 
 	public void whenGetPropertiesIsCalled() {
 		this.resultMap = this.netProps.getProperties();
@@ -191,7 +204,6 @@ public class NetworkPropertiesTest {
 	}
 
 	public void whenGetOptIsCalledWith(String key, Object clazz) {
-
 		if (clazz == String.class) {
 			this.optResult = this.netProps.getOpt(String.class, key, "");
 		} else {
@@ -206,9 +218,10 @@ public class NetworkPropertiesTest {
 	public void whenGetStringListOptIsCalledWith(String key) {
 		this.optResult = this.netProps.getOptStringList(key, "");
 	}
-	// End Of When //
 
-	// Then //
+	/*
+	 * Then
+	 */
 
 	public void thenResultEquals(String result) {
 		assertEquals(this.stringResult, result);
@@ -226,6 +239,8 @@ public class NetworkPropertiesTest {
 		assertEquals(this.stringListResult, result);
 	}
 
-	// End of Then //
+	public void thenAnNullPointerExceptionOccured() {
+		assertTrue(this.hasNullPointExceptionBeenThrown);
+	}
 
 }
