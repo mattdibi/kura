@@ -13,6 +13,7 @@
 package org.eclipse.kura.nm.configuration;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
@@ -29,7 +30,7 @@ import org.junit.Test;
 public class NetworkPropertiesTest {
 
 	NetworkProperties netProps;
-	Map<String, Object> properties;
+	Map<String, Object> properties = new HashMap<String, Object>();
 	Optional<?> optResult;
 	String stringResult;
 	List<String> stringListResult;
@@ -42,7 +43,7 @@ public class NetworkPropertiesTest {
 	public void shouldFailWhenNull() {
 		givenNetworkPropertiesBuiltWith(null);
 		givenNetworkPropsIsCreated();
-		thenAnNullPointerExceptionOccured();
+		thenANullPointerExceptionOccured();
 	}
 	
 	@Test
@@ -51,168 +52,191 @@ public class NetworkPropertiesTest {
 		givenNetworkPropsIsCreated();
 		whenGetPropertiesIsCalled();
 		thenResultEquals(new HashMap<String,Object>());
+		thenNoExceptionsOccured();
 	}
 
 	@Test
 	public void shouldReturnPropertiesWithGetProperties() {
-		givenTheMapWith("testKey1", "testString1");
+		givenMapWith("testKey1", "testString1");
 		givenNetworkPropsIsCreated();
 		whenGetPropertiesIsCalled();
 		thenResultEquals(Collections.singletonMap("testKey1", "testString1"));
+		thenNoExceptionsOccured();
 	}
 
 	@Test
 	public void shouldReturnStringWithGet() {
-		givenTheMapWith("testKey1", "testString1");
+		givenMapWith("testKey1", "testString1");
 		givenNetworkPropsIsCreated();
 		whenGetIsCalledWith("testKey1", String.class);
 		thenResultEquals("testString1");
+		thenNoExceptionsOccured();
 	}
 	
 	@Test
 	public void shouldReturnStringWithGetNull() {
-		givenTheMapWith("testKey1", null);
+		givenMapWith("testKey1", null);
 		givenNetworkPropsIsCreated();
 		whenGetIsCalledWith("testKey1", String.class);
-		thenAnNoSuchElementExceptionOccured();
+		thenANoSuchElementExceptionOccured();
 	}
 	
 	@Test
 	public void shouldReturnStringWithGetMissing() {
-		givenTheMapWith("testKey1", null);
+		givenMapWith("testKey1", null);
 		givenNetworkPropsIsCreated();
 		whenGetIsCalledWith("testKey1-nonExistant", String.class);
-		thenAnNoSuchElementExceptionOccured();
+		thenANoSuchElementExceptionOccured();
 	}
 	
 	@Test
 	public void shouldReturnStringWithGetEmptyString() {
-		givenTheMapWith("", "");
+		givenMapWith("", "");
 		givenNetworkPropsIsCreated();
 		whenGetIsCalledWith("", String.class);
 		thenResultEquals("");
+		thenNoExceptionsOccured();
 	}
 
 	@Test
 	public void shouldReturnStringWithGetOpt() {
-		givenTheMapWith("testKey1", "testString1");
+		givenMapWith("testKey1", "testString1");
 		givenNetworkPropsIsCreated();
 		whenGetOptIsCalledWith("testKey1", String.class);
 		thenResultEquals(Optional.of("testString1"));
+		thenNoExceptionsOccured();
 	}
 
 	@Test
 	public void shouldReturnEmptyGetOptEmpty() {
-		givenTheMapWith("testKeyEmpty", "");
+		givenMapWith("testKeyEmpty", "");
 		givenNetworkPropsIsCreated();
 		whenGetOptIsCalledWith("testKeyEmpty", String.class);
 		thenResultEquals(Optional.empty());
+		thenNoExceptionsOccured();
 	}
 
 	@Test
 	public void shouldReturnEmptyGetOptNull() {
-		givenTheMapWith("testKeyNull", null);
+		givenMapWith("testKeyNull", null);
 		givenNetworkPropsIsCreated();
 		whenGetOptIsCalledWith("testKeyNull", String.class);
 		thenResultEquals(Optional.empty());
+		thenNoExceptionsOccured();
 	}
 
 	@Test
 	public void shouldReturnEmptyGetOptEmptyKey() {
-		givenTheMapWith("testKeyNull", null);
+		givenMapWith("testKeyNull", null);
+		givenMapWith("testKey1", "testString1");
+		givenMapWith("testKeyNull2", null);
 		givenNetworkPropsIsCreated();
 		whenGetOptIsCalledWith("", String.class);
 		thenResultEquals(Optional.empty());
+		thenNoExceptionsOccured();
 	}
 
 	@Test
 	public void shouldReturnStringListGetStringListWithCommaSeperatedString() {
-		givenTheMapWith("testKey-comma-seperated", "commaSeperated1,commaSeperated2,commaSeperated3");
+		givenMapWith("testKeyNull", null);
+		givenMapWith("testKey1", "testString1");
+		givenMapWith("testKey-comma-seperated", "commaSeperated1,commaSeperated2,commaSeperated3");
 		givenNetworkPropsIsCreated();
 		whenGetStringListIsCalledWith("testKey-comma-seperated");
 		thenResultEquals(Arrays.asList("commaSeperated1", "commaSeperated2", "commaSeperated3"));
+		thenNoExceptionsOccured();
 	}
 
 	@Test
 	public void shouldReturnStringListGetStringListWithCommaSeperatedStringMalformed() {
-		givenTheMapWith("testKey-comma-seperated",
+		givenMapWith("testKeyNull", null);
+		givenMapWith("testKey1", "testString1");
+		givenMapWith("testKey-comma-seperated",
 				",,   ,,,commaSeperated1, ,,,,commaSeperated2,   ,,commaSeperated3,");
 		givenNetworkPropsIsCreated();
 		whenGetStringListIsCalledWith("testKey-comma-seperated");
 		thenResultEquals(Arrays.asList("commaSeperated1", "commaSeperated2", "commaSeperated3"));
+		thenNoExceptionsOccured();
 	}
 	
 	@Test
 	public void shouldReturnStringListGetStringListWithCommaSeperatedStringNull() {
-		givenTheMapWith("testKey-comma-seperated", null);
+		givenMapWith("testKey-comma-seperated", null);
 		givenNetworkPropsIsCreated();
 		whenGetStringListIsCalledWith("testKey-comma-seperated");
-		thenAnNoSuchElementExceptionOccured();
+		thenANoSuchElementExceptionOccured();
 	}
 	
 	@Test
 	public void shouldReturnStringListGetStringListWithCommaSeperatedStringMissing() {
-		givenTheMapWith("testKey-comma-seperated", null);
+		givenMapWith("testKey-comma-seperated", null);
 		givenNetworkPropsIsCreated();
 		whenGetStringListIsCalledWith("testKey-comma-seperated-not-existant");
-		thenAnNoSuchElementExceptionOccured();
+		thenANoSuchElementExceptionOccured();
 	}
 
 	@Test
 	public void shouldReturnStringListGetStringListWithRegularString() {
-		givenTheMapWith("testKey1", "testString1");
+		givenMapWith("testKey1", "testString1");
 		givenNetworkPropsIsCreated();
 		whenGetStringListIsCalledWith("testKey1");
 		thenResultEquals(Arrays.asList("testString1"));
+		thenNoExceptionsOccured();
 	}
 
 	@Test
 	public void shouldReturnStringListGetStringListWithNull() {
-		givenTheMapWith("testKeyNull", null);
+		givenMapWith("testKeyNull", null);
 		givenNetworkPropsIsCreated();
 		whenGetStringListIsCalledWith("testKeyNull");
 		thenResultEquals(Arrays.asList());
+		thenNoExceptionsOccured();
 	}
 
 	@Test
 	public void shouldReturnOptionalStringListGetStringListOptWithCommaSeperatedString() {
-		givenTheMapWith("testKey-comma-seperated", "commaSeperated1,commaSeperated2,commaSeperated3");
+		givenMapWith("testKey-comma-seperated", "commaSeperated1,commaSeperated2,commaSeperated3");
 		givenNetworkPropsIsCreated();
 		whenGetStringListOptIsCalledWith("testKey-comma-seperated");
 		thenResultEquals(Optional.of(Arrays.asList("commaSeperated1", "commaSeperated2", "commaSeperated3")));
+		thenNoExceptionsOccured();
 	}
 
 	@Test
 	public void shouldReturnOptionalStringListGetStringListOptWithCommaSeperatedStringMalformed() {
-		givenTheMapWith("testKey-comma-seperated",
+		givenMapWith("testKey-comma-seperated",
 				", , ,,,,commaSeperated1, , , ,,,,,commaSeperated2,,,, ,, ,,commaSeperated3,, , ,,,, ,");
 		givenNetworkPropsIsCreated();
 		whenGetStringListOptIsCalledWith("testKey-comma-seperated");
 		thenResultEquals(Optional.of(Arrays.asList("commaSeperated1", "commaSeperated2", "commaSeperated3")));
+		thenNoExceptionsOccured();
 	}
 
 	@Test
 	public void shouldReturnOptionalStringListGetStringListOptWithString() {
-		givenTheMapWith("testKey1", "testString1");
+		givenMapWith("testKey1", "testString1");
 		givenNetworkPropsIsCreated();
 		whenGetStringListOptIsCalledWith("testKey1");
 		thenResultEquals(Optional.of(Arrays.asList("testString1")));
+		thenNoExceptionsOccured();
 	}
 
 	@Test
 	public void shouldReturnEmptyGetStringListOptWithNull() {
-		givenTheMapWith("testKeyNull", null);
+		givenMapWith("testKeyNull", null);
 		givenNetworkPropsIsCreated();
 		whenGetStringListOptIsCalledWith("testKeyNull");
 		thenResultEquals(Optional.empty());
+		thenNoExceptionsOccured();
 	}
 
 	@Test
 	public void shouldReturnEmptyGetStringListOptWithNoKey() {
-		givenTheMapWith("testKeyNull", null);
+		givenMapWith("testKeyNull", null);
 		givenNetworkPropsIsCreated();
 		whenGetStringListOptIsCalledWith("");
 		thenResultEquals(Optional.empty());
+		thenNoExceptionsOccured();
 	}
 
 	/*
@@ -223,8 +247,7 @@ public class NetworkPropertiesTest {
 		this.properties = properties;
 	}
 
-	public void givenTheMapWith(String key, Object pair) {
-		properties = new HashMap<String, Object>();
+	public void givenMapWith(String key, Object pair) {
 		properties.put(key, pair);
 	}
 
@@ -294,11 +317,16 @@ public class NetworkPropertiesTest {
 		assertEquals(this.stringListResult, result);
 	}
 
-	public void thenAnNullPointerExceptionOccured() {
+	public void thenANullPointerExceptionOccured() {
 		assertTrue(this.hasNullPointExceptionBeenThrown);
 	}
-	public void thenAnNoSuchElementExceptionOccured() {
+	public void thenANoSuchElementExceptionOccured() {
 		assertTrue(this.hasNoSuchElementExceptionBeenThrown);
+	}
+	
+	public void thenNoExceptionsOccured() {
+		assertFalse(this.hasNullPointExceptionBeenThrown);
+		assertFalse(this.hasNoSuchElementExceptionBeenThrown);
 	}
 
 }
