@@ -44,6 +44,14 @@ public class NetworkPropertiesTest {
 		givenNetworkPropsIsCreated();
 		thenAnNullPointerExceptionOccured();
 	}
+	
+	@Test
+	public void shouldFailWhenWmpty() {
+		givenNetworkPropertiesBuiltWith(new HashMap<String,Object>());
+		givenNetworkPropsIsCreated();
+		whenGetPropertiesIsCalled();
+		thenResultEquals(new HashMap<String,Object>());
+	}
 
 	@Test
 	public void shouldReturnPropertiesWithGetProperties() {
@@ -75,6 +83,14 @@ public class NetworkPropertiesTest {
 		givenNetworkPropsIsCreated();
 		whenGetIsCalledWith("testKey1-nonExistant", String.class);
 		thenAnNoSuchElementExceptionOccured();
+	}
+	
+	@Test
+	public void shouldReturnStringWithGetEmptyString() {
+		givenTheMapWith("", "");
+		givenNetworkPropsIsCreated();
+		whenGetIsCalledWith("", String.class);
+		thenResultEquals("");
 	}
 
 	@Test
