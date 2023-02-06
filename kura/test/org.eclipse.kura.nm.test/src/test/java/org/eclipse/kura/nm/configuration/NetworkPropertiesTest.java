@@ -47,7 +47,7 @@ public class NetworkPropertiesTest {
 	}
 
 	@Test
-	public void shouldFailWhenWmpty() {
+	public void shouldFailWhenEmpty() {
 		givenNetworkPropertiesBuiltWith(new HashMap<String, Object>());
 		givenNetworkPropsIsCreated();
 		whenGetPropertiesIsCalled();
