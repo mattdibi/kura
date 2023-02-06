@@ -32,7 +32,12 @@ public class NetworkPropertiesTest {
 	NetworkProperties netProps;
 	Map<String, Object> properties = new HashMap<String, Object>();
 	Optional<?> optResult;
-	String stringResult;
+	String stringResult; // Boolean, Short, Integer, Long
+	Boolean booleanResult;
+	Short shortResult;
+	int intResult;
+	Long longResult;
+
 	List<String> stringListResult;
 	Map<String, Object> resultMap;
 
@@ -95,6 +100,42 @@ public class NetworkPropertiesTest {
 		thenNoExceptionsOccured();
 		thenStringResultEquals("");
 	}
+	
+	@Test
+	public void shouldReturnBooleanWithGet() {
+		givenMapWith("testKey1", false);
+		givenNetworkPropertiesBuiltWith(this.properties);
+		whenGetIsCalledWith("testKey1", Boolean.class);
+		thenNoExceptionsOccured();
+		thenBooleanResultEquals(false);
+	}
+	
+	@Test
+	public void shouldReturnShortWithGet() {
+		givenMapWith("testKey1", (short) 10);
+		givenNetworkPropertiesBuiltWith(this.properties);
+		whenGetIsCalledWith("testKey1", Short.class);
+		thenNoExceptionsOccured();
+		thenShortResultEquals((short) 10);
+	}
+	
+	@Test
+	public void shouldReturnIntWithGet() {
+		givenMapWith("testKey1", (int) 34);
+		givenNetworkPropertiesBuiltWith(this.properties);
+		whenGetIsCalledWith("testKey1", Integer.class);
+		thenNoExceptionsOccured();
+		thenIntResultEquals((int) 34);
+	}
+	
+	@Test
+	public void shouldReturnLongWithGet() {
+		givenMapWith("testKey1", (long) 23324234);
+		givenNetworkPropertiesBuiltWith(this.properties);
+		whenGetIsCalledWith("testKey1", Long.class);
+		thenNoExceptionsOccured();
+		thenLongResultEquals((long) 23324234);
+	}
 
 	@Test
 	public void shouldReturnStringWithGetOpt() {
@@ -105,6 +146,42 @@ public class NetworkPropertiesTest {
 		thenOptionalResultEquals(Optional.of("testString1"));
 	}
 
+	@Test
+	public void shouldReturnBooleanWithGetOpt() {
+		givenMapWith("testKey1", true);
+		givenNetworkPropertiesBuiltWith(this.properties);
+		whenGetOptIsCalledWith("testKey1", Boolean.class);
+		thenNoExceptionsOccured();
+		thenOptionalResultEquals(Optional.of(true));
+	}
+
+	@Test
+	public void shouldReturnShortWithGetOpt() {
+		givenMapWith("testKey1", (short) 42);
+		givenNetworkPropertiesBuiltWith(this.properties);
+		whenGetOptIsCalledWith("testKey1", Short.class);
+		thenNoExceptionsOccured();
+		thenOptionalResultEquals(Optional.of((short) 42));
+	}
+	
+	@Test
+	public void shouldReturnIntegerWithGetOpt() {
+		givenMapWith("testKey1", (int) 42);
+		givenNetworkPropertiesBuiltWith(this.properties);
+		whenGetOptIsCalledWith("testKey1", Integer.class);
+		thenNoExceptionsOccured();
+		thenOptionalResultEquals(Optional.of((int) 42));
+	}
+	
+	@Test
+	public void shouldReturnLongWithGetOpt() {
+		givenMapWith("testKey1", (long) 4738758);
+		givenNetworkPropertiesBuiltWith(this.properties);
+		whenGetOptIsCalledWith("testKey1", Long.class);
+		thenNoExceptionsOccured();
+		thenOptionalResultEquals(Optional.of((long) 4738758));
+	}
+	
 	@Test
 	public void shouldReturnEmptyGetOptEmpty() {
 		givenMapWith("testKeyEmpty", "");
@@ -267,9 +344,16 @@ public class NetworkPropertiesTest {
 	public void whenGetIsCalledWith(String key, Object clazz) {
 
 		try {
-
 			if (clazz == String.class) {
 				this.stringResult = this.netProps.get(String.class, key, "");
+			} else if (clazz == Boolean.class) {
+				this.booleanResult = this.netProps.get(Boolean.class, key, "");
+			} else if (clazz == Short.class) {
+				this.shortResult = this.netProps.get(Short.class, key, "");
+			} else if (clazz == Integer.class) {
+				this.intResult = this.netProps.get(Integer.class, key, "");
+			} else if (clazz == Long.class) {
+				this.longResult = this.netProps.get(Long.class, key, "");
 			} else {
 				throw new NotSupported("Data type is not supported with this Test");
 			}
@@ -285,6 +369,14 @@ public class NetworkPropertiesTest {
 		try {
 			if (clazz == String.class) {
 				this.optResult = this.netProps.getOpt(String.class, key, "");
+			} else if (clazz == Boolean.class) {
+				this.optResult = this.netProps.getOpt(Boolean.class, key, "");
+			} else if (clazz == Short.class) {
+				this.optResult = this.netProps.getOpt(Short.class, key, "");
+			} else if (clazz == Integer.class) {
+				this.optResult = this.netProps.getOpt(Integer.class, key, "");
+			} else if (clazz == Long.class) {
+				this.optResult = this.netProps.getOpt(Long.class, key, "");
 			} else {
 				throw new NotSupported("Data type is not supported with this Test");
 			}
@@ -324,6 +416,22 @@ public class NetworkPropertiesTest {
 
 	public void thenStringResultEquals(String result) {
 		assertEquals(result, this.stringResult);
+	}
+
+	public void thenBooleanResultEquals(Boolean result) {
+		assertEquals(result, this.booleanResult);
+	}
+
+	public void thenShortResultEquals(Short result) {
+		assertEquals(result, this.shortResult);
+	}
+
+	public void thenIntResultEquals(int result) {
+		assertEquals(result, this.intResult);
+	}
+
+	public void thenLongResultEquals(Long result) {
+		assertEquals(result, this.longResult);
 	}
 
 	public void thenMapResultEquals(Map<String, Object> result) {
