@@ -254,8 +254,7 @@ public class NetworkPropertiesTest {
 
 		try {
 			netProps = new NetworkProperties(this.properties);
-			this.hasNullPointExceptionBeenThrown = false;
-			this.hasNoSuchElementExceptionBeenThrown = false;
+
 		} catch (NullPointerException e) {
 			this.hasNullPointExceptionBeenThrown = true;
 		} catch (NoSuchElementException e) {
@@ -280,8 +279,7 @@ public class NetworkPropertiesTest {
 			} else {
 				throw new NotSupported("Data type is not supported with this Test");
 			}
-			this.hasNullPointExceptionBeenThrown = false;
-			this.hasNoSuchElementExceptionBeenThrown = false;
+
 		} catch (NullPointerException e) {
 			this.hasNullPointExceptionBeenThrown = true;
 		} catch (NoSuchElementException e) {
@@ -296,8 +294,7 @@ public class NetworkPropertiesTest {
 			} else {
 				throw new NotSupported("Data type is not supported with this Test");
 			}
-			this.hasNullPointExceptionBeenThrown = false;
-			this.hasNoSuchElementExceptionBeenThrown = false;
+
 		} catch (NullPointerException e) {
 			this.hasNullPointExceptionBeenThrown = true;
 		} catch (NoSuchElementException e) {
@@ -308,8 +305,7 @@ public class NetworkPropertiesTest {
 	public void whenGetStringListIsCalledWith(String key) {
 		try {
 			this.stringListResult = this.netProps.getStringList(key, "");
-			this.hasNullPointExceptionBeenThrown = false;
-			this.hasNoSuchElementExceptionBeenThrown = false;
+
 		} catch (NullPointerException e) {
 			this.hasNullPointExceptionBeenThrown = true;
 		} catch (NoSuchElementException e) {
@@ -320,8 +316,7 @@ public class NetworkPropertiesTest {
 	public void whenGetStringListOptIsCalledWith(String key) {
 		try {
 			this.optResult = this.netProps.getOptStringList(key, "");
-			this.hasNullPointExceptionBeenThrown = false;
-			this.hasNoSuchElementExceptionBeenThrown = false;
+
 		} catch (NullPointerException e) {
 			this.hasNullPointExceptionBeenThrown = true;
 		} catch (NoSuchElementException e) {
