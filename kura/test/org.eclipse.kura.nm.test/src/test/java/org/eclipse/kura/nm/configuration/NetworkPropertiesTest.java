@@ -45,13 +45,13 @@ public class NetworkPropertiesTest {
 	Boolean hasNoSuchElementExceptionBeenThrown = false;
 
 	@Test
-	public void shouldFailWhenNull() {
+	public void shouldThrowWithNullMap() {
 		givenNetworkPropertiesBuiltWith(null);
 		thenANullPointerExceptionOccured();
 	}
 
 	@Test
-	public void shouldFailWhenEmpty() {
+	public void shouldWorkWithEmptyMap() {
 		givenNetworkPropertiesBuiltWith(new HashMap<String, Object>());
 		whenGetPropertiesIsCalled();
 		thenNoExceptionsOccured();
@@ -77,7 +77,7 @@ public class NetworkPropertiesTest {
 	}
 
 	@Test
-	public void shouldReturnStringWithGetNull() {
+	public void shouldThrowWithGetNull() {
 		givenMapWith("testKey1", null);
 		givenNetworkPropertiesBuiltWith(this.properties);
 		whenGetIsCalledWith("testKey1", String.class);
@@ -85,7 +85,7 @@ public class NetworkPropertiesTest {
 	}
 
 	@Test
-	public void shouldReturnStringWithGetMissing() {
+	public void shouldThrowWithGetMissing() {
 		givenMapWith("testKey1", null);
 		givenNetworkPropertiesBuiltWith(this.properties);
 		whenGetIsCalledWith("testKey1-nonExistant", String.class);
@@ -234,7 +234,7 @@ public class NetworkPropertiesTest {
 	}
 
 	@Test
-	public void shouldReturnStringListGetStringListWithCommaSeperatedStringNull() {
+	public void shouldThrowListGetStringListWithCommaSeperatedStringNull() {
 		givenMapWith("testKey-comma-seperated", null);
 		givenNetworkPropertiesBuiltWith(this.properties);
 		whenGetStringListIsCalledWith("testKey-comma-seperated");
@@ -242,7 +242,7 @@ public class NetworkPropertiesTest {
 	}
 
 	@Test
-	public void shouldReturnStringListGetStringListWithCommaSeperatedStringMissing() {
+	public void shouldThrowGetStringListWithCommaSeperatedStringMissing() {
 		givenMapWith("testKey-comma-seperated", null);
 		givenNetworkPropertiesBuiltWith(this.properties);
 		whenGetStringListIsCalledWith("testKey-comma-seperated-not-existant");
