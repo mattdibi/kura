@@ -32,7 +32,7 @@ public class NetworkPropertiesTest {
 	NetworkProperties netProps;
 	Map<String, Object> properties = new HashMap<String, Object>();
 	Optional<?> optResult;
-	String stringResult; // Boolean, Short, Integer, Long
+	String stringResult;
 	Boolean booleanResult;
 	Short shortResult;
 	int intResult;
@@ -112,29 +112,29 @@ public class NetworkPropertiesTest {
 
 	@Test
 	public void shouldReturnShortWithGet() {
-		givenMapWith("testKey1", Short.valueOf("10"));
+		givenMapWith("testKey1", Short.valueOf((short) 10));
 		givenNetworkPropertiesBuiltWith(this.properties);
 		whenGetIsCalledWith("testKey1", Short.class);
 		thenNoExceptionsOccured();
-		thenShortResultEquals((short) 10);
+		thenShortResultEquals(Short.valueOf((short) 10));
 	}
 
 	@Test
 	public void shouldReturnIntWithGet() {
-		givenMapWith("testKey1", new Integer(34));
+		givenMapWith("testKey1", Integer.valueOf(34));
 		givenNetworkPropertiesBuiltWith(this.properties);
 		whenGetIsCalledWith("testKey1", Integer.class);
 		thenNoExceptionsOccured();
-		thenIntResultEquals((int) 34);
+		thenIntResultEquals(Integer.valueOf(34));
 	}
 
 	@Test
 	public void shouldReturnLongWithGet() {
-		givenMapWith("testKey1", (long) 23324234);
+		givenMapWith("testKey1", Long.valueOf(23324234));
 		givenNetworkPropertiesBuiltWith(this.properties);
 		whenGetIsCalledWith("testKey1", Long.class);
 		thenNoExceptionsOccured();
-		thenLongResultEquals((long) 23324234);
+		thenLongResultEquals(Long.valueOf(23324234));
 	}
 
 	@Test
@@ -341,7 +341,7 @@ public class NetworkPropertiesTest {
 		this.resultMap = this.netProps.getProperties();
 	}
 
-	public void whenGetIsCalledWith(String key, Object clazz) {
+	public void whenGetIsCalledWith(String key, Class<?> clazz) {
 
 		try {
 			if (clazz == String.class) {
@@ -365,9 +365,9 @@ public class NetworkPropertiesTest {
 		}
 	}
 
-	public void whenGetOptIsCalledWith(String key, Object clazz) {
+	public void whenGetOptIsCalledWith(String key, Class<?> clazz) {
 		try {
-			this.optResult = this.netProps.getOpt(String.class, key, "");
+			this.optResult = this.netProps.getOpt(clazz, key, "");
 		} catch (NullPointerException e) {
 			this.hasNullPointExceptionBeenThrown = true;
 		} catch (NoSuchElementException e) {
