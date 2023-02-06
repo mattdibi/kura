@@ -50,7 +50,7 @@ public class NetworkPropertiesTest {
 		givenNetworkPropertiesBuiltWith(new HashMap<String, Object>());
 		whenGetPropertiesIsCalled();
 		thenNoExceptionsOccured();
-		thenResultEquals(new HashMap<String, Object>());
+		thenMapResultEquals(new HashMap<String, Object>());
 	}
 
 	@Test
@@ -59,7 +59,7 @@ public class NetworkPropertiesTest {
 		givenNetworkPropertiesBuiltWith(this.properties);
 		whenGetPropertiesIsCalled();
 		thenNoExceptionsOccured();
-		thenResultEquals(Collections.singletonMap("testKey1", "testString1"));
+		thenMapResultEquals(Collections.singletonMap("testKey1", "testString1"));
 	}
 
 	@Test
@@ -68,7 +68,7 @@ public class NetworkPropertiesTest {
 		givenNetworkPropertiesBuiltWith(this.properties);
 		whenGetIsCalledWith("testKey1", String.class);
 		thenNoExceptionsOccured();
-		thenResultEquals("testString1");
+		thenStringResultEquals("testString1");
 	}
 
 	@Test
@@ -93,7 +93,7 @@ public class NetworkPropertiesTest {
 		givenNetworkPropertiesBuiltWith(this.properties);
 		whenGetIsCalledWith("", String.class);
 		thenNoExceptionsOccured();
-		thenResultEquals("");
+		thenStringResultEquals("");
 	}
 
 	@Test
@@ -102,7 +102,7 @@ public class NetworkPropertiesTest {
 		givenNetworkPropertiesBuiltWith(this.properties);
 		whenGetOptIsCalledWith("testKey1", String.class);
 		thenNoExceptionsOccured();
-		thenResultEquals(Optional.of("testString1"));
+		thenOptionalResultEquals(Optional.of("testString1"));
 	}
 
 	@Test
@@ -111,7 +111,7 @@ public class NetworkPropertiesTest {
 		givenNetworkPropertiesBuiltWith(this.properties);
 		whenGetOptIsCalledWith("testKeyEmpty", String.class);
 		thenNoExceptionsOccured();
-		thenResultEquals(Optional.empty());
+		thenOptionalResultEquals(Optional.empty());
 	}
 
 	@Test
@@ -120,7 +120,7 @@ public class NetworkPropertiesTest {
 		givenNetworkPropertiesBuiltWith(this.properties);
 		whenGetOptIsCalledWith("testKeyNull", String.class);
 		thenNoExceptionsOccured();
-		thenResultEquals(Optional.empty());
+		thenOptionalResultEquals(Optional.empty());
 	}
 
 	@Test
@@ -131,7 +131,7 @@ public class NetworkPropertiesTest {
 		givenNetworkPropertiesBuiltWith(this.properties);
 		whenGetOptIsCalledWith("", String.class);
 		thenNoExceptionsOccured();
-		thenResultEquals(Optional.empty());
+		thenOptionalResultEquals(Optional.empty());
 	}
 
 	@Test
@@ -142,7 +142,7 @@ public class NetworkPropertiesTest {
 		givenNetworkPropertiesBuiltWith(this.properties);
 		whenGetStringListIsCalledWith("testKey-comma-seperated");
 		thenNoExceptionsOccured();
-		thenResultEquals(Arrays.asList("commaSeperated1", "commaSeperated2", "commaSeperated3"));
+		thenStringListResultEquals(Arrays.asList("commaSeperated1", "commaSeperated2", "commaSeperated3"));
 	}
 
 	@Test
@@ -153,7 +153,7 @@ public class NetworkPropertiesTest {
 		givenNetworkPropertiesBuiltWith(this.properties);
 		whenGetStringListIsCalledWith("testKey-comma-seperated");
 		thenNoExceptionsOccured();
-		thenResultEquals(Arrays.asList("commaSeperated1", "commaSeperated2", "commaSeperated3"));
+		thenStringListResultEquals(Arrays.asList("commaSeperated1", "commaSeperated2", "commaSeperated3"));
 	}
 
 	@Test
@@ -178,7 +178,7 @@ public class NetworkPropertiesTest {
 		givenNetworkPropertiesBuiltWith(this.properties);
 		whenGetStringListIsCalledWith("testKey1");
 		thenNoExceptionsOccured();
-		thenResultEquals(Arrays.asList("testString1"));
+		thenStringListResultEquals(Arrays.asList("testString1"));
 	}
 
 	@Test
@@ -187,7 +187,7 @@ public class NetworkPropertiesTest {
 		givenNetworkPropertiesBuiltWith(this.properties);
 		whenGetStringListIsCalledWith("testKeyNull");
 		thenNoExceptionsOccured();
-		thenResultEquals(Arrays.asList());
+		thenStringListResultEquals(Arrays.asList());
 	}
 
 	@Test
@@ -196,7 +196,7 @@ public class NetworkPropertiesTest {
 		givenNetworkPropertiesBuiltWith(this.properties);
 		whenGetStringListOptIsCalledWith("testKey-comma-seperated");
 		thenNoExceptionsOccured();
-		thenResultEquals(Optional.of(Arrays.asList("commaSeperated1", "commaSeperated2", "commaSeperated3")));
+		thenOptionalResultEquals(Optional.of(Arrays.asList("commaSeperated1", "commaSeperated2", "commaSeperated3")));
 	}
 
 	@Test
@@ -206,7 +206,7 @@ public class NetworkPropertiesTest {
 		givenNetworkPropertiesBuiltWith(this.properties);
 		whenGetStringListOptIsCalledWith("testKey-comma-seperated");
 		thenNoExceptionsOccured();
-		thenResultEquals(Optional.of(Arrays.asList("commaSeperated1", "commaSeperated2", "commaSeperated3")));
+		thenOptionalResultEquals(Optional.of(Arrays.asList("commaSeperated1", "commaSeperated2", "commaSeperated3")));
 	}
 
 	@Test
@@ -215,7 +215,7 @@ public class NetworkPropertiesTest {
 		givenNetworkPropertiesBuiltWith(this.properties);
 		whenGetStringListOptIsCalledWith("testKey1");
 		thenNoExceptionsOccured();
-		thenResultEquals(Optional.of(Arrays.asList("testString1")));
+		thenOptionalResultEquals(Optional.of(Arrays.asList("testString1")));
 	}
 
 	@Test
@@ -224,7 +224,7 @@ public class NetworkPropertiesTest {
 		givenNetworkPropertiesBuiltWith(this.properties);
 		whenGetStringListOptIsCalledWith("testKeyNull");
 		thenNoExceptionsOccured();
-		thenResultEquals(Optional.empty());
+		thenOptionalResultEquals(Optional.empty());
 	}
 
 	@Test
@@ -233,7 +233,7 @@ public class NetworkPropertiesTest {
 		givenNetworkPropertiesBuiltWith(this.properties);
 		whenGetStringListOptIsCalledWith("");
 		thenNoExceptionsOccured();
-		thenResultEquals(Optional.empty());
+		thenOptionalResultEquals(Optional.empty());
 	}
 
 	/*
@@ -322,19 +322,19 @@ public class NetworkPropertiesTest {
 	 * Then
 	 */
 
-	public void thenResultEquals(String result) {
+	public void thenStringResultEquals(String result) {
 		assertEquals(result, this.stringResult);
 	}
 
-	public void thenResultEquals(Map<String, Object> result) {
+	public void thenMapResultEquals(Map<String, Object> result) {
 		assertEquals(this.resultMap, result);
 	}
 
-	public void thenResultEquals(Optional<?> result) {
+	public void thenOptionalResultEquals(Optional<?> result) {
 		assertEquals(this.optResult, result);
 	}
 
-	public void thenResultEquals(List<String> result) {
+	public void thenStringListResultEquals(List<String> result) {
 		assertEquals(this.stringListResult, result);
 	}
 
