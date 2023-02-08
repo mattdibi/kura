@@ -94,11 +94,20 @@ public class NetworkPropertiesTest {
 
 	@Test
 	public void getShouldReturnStringWithEmptyString() {
-		givenMapWith("", "");
+		givenMapWith("Empty-String", "");
+		givenNetworkPropertiesBuiltWith(this.properties);
+		whenGetIsCalledWith("Empty-String", String.class);
+		thenNoExceptionsOccured();
+		thenStringResultEquals("");
+	}
+	
+	@Test
+	public void getShouldThrowWithEmptyStringKey() {
+		givenMapWith("test-1", "");
 		givenNetworkPropertiesBuiltWith(this.properties);
 		whenGetIsCalledWith("", String.class);
 		thenNoExceptionsOccured();
-		thenStringResultEquals("");
+		thenANoSuchElementExceptionOccured();
 	}
 
 	@Test
