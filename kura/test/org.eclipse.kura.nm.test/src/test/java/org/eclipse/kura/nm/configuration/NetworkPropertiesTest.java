@@ -35,7 +35,7 @@ public class NetworkPropertiesTest {
 	String stringResult;
 	Boolean booleanResult;
 	Short shortResult;
-	int intResult;
+	Integer intResult;
 	Long longResult;
 
 	List<String> stringListResult;
@@ -410,7 +410,7 @@ public class NetworkPropertiesTest {
 		assertEquals(result, this.shortResult);
 	}
 
-	public void thenIntResultEquals(int result) {
+	public void thenIntResultEquals(Integer result) {
 		assertEquals(result, this.intResult);
 	}
 
