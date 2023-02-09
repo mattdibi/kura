@@ -98,16 +98,16 @@ public class NetworkPropertiesTest {
 		givenNetworkPropertiesBuiltWith(this.properties);
 		whenGetIsCalledWith("Empty-String", String.class);
 		thenNoExceptionsOccured();
-		thenStringResultEquals("");
+		thenANoSuchElementExceptionOccured();
 	}
 	
 	@Test
 	public void getShouldThrowWithEmptyStringKey() {
-		givenMapWith("test-1", "");
+		givenMapWith("", "Empty String Test");
 		givenNetworkPropertiesBuiltWith(this.properties);
 		whenGetIsCalledWith("", String.class);
 		thenNoExceptionsOccured();
-		thenANoSuchElementExceptionOccured();
+		thenStringResultEquals("Empty String Test");
 	}
 
 	@Test
@@ -211,13 +211,12 @@ public class NetworkPropertiesTest {
 
 	@Test
 	public void getOptShouldWorkWithEmptyKey() {
-		givenMapWith("testKeyNull", null);
+		givenMapWith("", "test value");
 		givenMapWith("testKey1", "testString1");
 		givenMapWith("testKeyNull2", null);
 		givenNetworkPropertiesBuiltWith(this.properties);
 		whenGetOptIsCalledWith("", String.class);
-		thenNoExceptionsOccured();
-		thenOptionalResultEquals(Optional.empty());
+		thenOptionalResultEquals(Optional.of("test value"));
 	}
 
 	@Test
@@ -305,10 +304,10 @@ public class NetworkPropertiesTest {
 
 	@Test
 	public void getOptStringListShouldWorkWithMissingKey() {
-		givenMapWith("testKeyNull", null);
+		givenMapWith("", "Empty String Test");
 		givenNetworkPropertiesBuiltWith(this.properties);
 		whenGetOptStringListIsCalledWith("");
-		thenOptionalResultEquals(Optional.empty());
+		thenOptionalResultEquals(Optional.of(Arrays.asList("Empty String Test")));
 	}
 
 	/*
