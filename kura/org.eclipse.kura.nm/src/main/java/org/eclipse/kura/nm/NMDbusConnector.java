@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.CountDownLatch;
 
 import org.eclipse.kura.KuraException;
 import org.eclipse.kura.executor.CommandExecutorService;
@@ -269,6 +270,10 @@ public class NMDbusConnector {
 
             logger.info("New settings: {}", newConnectionSettings);
 
+            CountDownLatch latch = new CountDownLatch(1);
+            NMDeviceStateChangeHandler stateHandler = new NMDeviceStateChangeHandler(latch, device.getObjectPath());
+            this.dbusConnection.addSigHandler(Device.StateChanged.class, stateHandler);
+
             if (connection.isPresent()) {
                 logger.info("Current settings: {}", connection.get().GetSettings());
 
@@ -279,6 +284,16 @@ public class NMDbusConnector {
                 this.nm.AddAndActivateConnection(newConnectionSettings, new DBusPath(device.getObjectPath()),
                         new DBusPath("/"));
             }
+
+            try {
+                latch.await();
+            } catch (InterruptedException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+
+            logger.info("Wait complete");
+            this.dbusConnection.removeSigHandler(Device.StateChanged.class, stateHandler);
         }
     }
 
