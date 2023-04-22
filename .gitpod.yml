@@ -10,4 +10,10 @@ vscode:
     - vscjava.vscode-maven
     # - yaozheng.vscode-pde
 
+tasks:
+  - init: |
+      mvn -f target-platform/pom.xml clean install -B
+      mvn -f kura/pom.xml clean install -Dmaven.test.skip=true
+      mvn -f kura/pom.xml test-compile
+
 workspaceLocation: "./kura/kura"
