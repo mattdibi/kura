@@ -10,4 +10,4 @@ vscode:
     - vscjava.vscode-maven
     # - yaozheng.vscode-pde
 
-workspaceLocation: "./kura"
+workspaceLocation: "./kura/kura"
