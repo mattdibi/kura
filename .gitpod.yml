@@ -8,7 +8,7 @@ vscode:
     - vscjava.vscode-java-pack
     - vscjava.vscode-java-test
     - vscjava.vscode-maven
-    # - yaozheng.vscode-pde
+    - https://github.com/testforstephen/vscode-pde/releases/download/0.8.0/vscode-pde-0.8.0.vsix
 
 workspaceLocation: "./kura/kura"
 
