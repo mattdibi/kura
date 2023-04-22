@@ -12,6 +12,14 @@ Eclipse Kura™
 
 </div>
 
+<div align="center">
+
+<!-- WARNING!: Change the URL before merging! -->
+
+[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/mattdibi/kura)
+
+</div>
+
 An OSGi-based Application Framework for M2M Service Gateways
 
 
