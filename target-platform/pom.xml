@@ -216,8 +216,33 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>com.google.code.maven-replacer-plugin</groupId>
+                <artifactId>replacer</artifactId>
+                <version>1.5.3</version>
+                <inherited>false</inherited>
+                <executions>
+                    <execution>
+                        <phase>
+                            install
+                        </phase>
+                        <goals>
+                            <goal>replace</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <file>${project.basedir}/../kura/target-definition/kura-equinox_3.16.0.target.in</file>
+                    <outputFile>${project.basedir}/../kura/target-definition/kura-equinox_3.16.0.target</outputFile>
+                    <replacements>
+                        <replacement>
+                            <token>@PLACEHOLDER@</token>
+                            <value>${project.basedir}/..</value>
+                        </replacement>
+                    </replacements>
+                </configuration>
+            </plugin>
         </plugins>
-
         <pluginManagement>
             <plugins>
                 <plugin>
