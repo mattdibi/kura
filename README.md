@@ -158,7 +158,6 @@ To correctly setup the environment, proceed as follows:
 - Open Visual Studio Code in the `kura` directory.
 - Install the recommended extensions.
 - Load the project in [Standard Mode](https://code.visualstudio.com/docs/java/java-project#_lightweight-mode).
-- After the build completes you'll see a lot of errors. This is normal. To fix this run the _"Developer: Reload Window"_ command in the [Command Palette](https://code.visualstudio.com/docs/getstarted/userinterface#_command-palette)(this is needed only once, the first time you import the project).
 - ... and you're done!
 
 Now you are ready to develop on Eclipse Kura.
