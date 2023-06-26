@@ -3,5 +3,5 @@
   "features": {
     },
   "postCreateCommand": "pip3 install --upgrade pip & pip3 install -r requirements.txt",
-  "postStartCommand": "mkdocs serve"
+  "postStartCommand": "nohup bash -c 'mkdocs serve &'"
 }
