@@ -116,7 +116,7 @@ public class NMDbusConnector {
 
     private NMDbusConnector(DBusConnection dbusConnection) throws DBusException {
         this.dbusConnection = Objects.requireNonNull(dbusConnection);
-        this.nm = NMDbusWrapper(this.dbusConnection);
+        this.nm = new NMDbusWrapper(this.dbusConnection);
     }
 
     public static synchronized NMDbusConnector getInstance() throws DBusException {
