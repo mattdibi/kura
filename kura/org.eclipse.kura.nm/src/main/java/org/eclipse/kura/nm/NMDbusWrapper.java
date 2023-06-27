@@ -42,7 +42,6 @@ public class NMDbusWrapper {
     private static final String NM_BUS_NAME = "org.freedesktop.NetworkManager";
     private static final String NM_BUS_PATH = "/org/freedesktop/NetworkManager";
     private static final String NM_DEVICE_BUS_NAME = "org.freedesktop.NetworkManager.Device";
-    private static final String NM_DEVICE_WIRELESS_BUS_NAME = "org.freedesktop.NetworkManager.Device.Wireless";
     private static final String NM_GENERIC_DEVICE_BUS_NAME = "org.freedesktop.NetworkManager.Device.Generic";
     private static final String NM_SETTINGS_BUS_PATH = "/org/freedesktop/NetworkManager/Settings";
 
@@ -52,7 +51,6 @@ public class NMDbusWrapper {
     private static final String NM_DEVICE_PROPERTY_MANAGED = "Managed";
     private static final String NM_DEVICE_PROPERTY_DEVICETYPE = "DeviceType";
     private static final String NM_DEVICE_PROPERTY_STATE = "State";
-    private static final String NM_DEVICE_PROPERTY_IP4CONFIG = "Ip4Config";
     private static final String NM_SETTING_CONNECTION_KEY = "connection";
     private static final String NM_DEVICE_GENERIC_PROPERTY_TYPEDESCRIPTION = "TypeDescription";
 
