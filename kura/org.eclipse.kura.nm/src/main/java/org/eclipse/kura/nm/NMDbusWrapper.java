@@ -68,6 +68,11 @@ public class NMDbusWrapper {
         return this.networkManager.GetPermissions();
     }
 
+    public String getVersion() throws DBusException {
+        Properties nmProperties = this.dbusConnection.getRemoteObject(NM_BUS_NAME, NM_BUS_PATH, Properties.class);
+        return nmProperties.Get(NM_BUS_NAME, NM_PROPERTY_VERSION);
+    }
+
     public String getDeviceInterface(Device device) throws DBusException {
         Properties deviceProperties = this.dbusConnection.getRemoteObject(NM_BUS_NAME, device.getObjectPath(),
                 Properties.class);

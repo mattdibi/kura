@@ -49,9 +49,7 @@ import org.freedesktop.dbus.DBusPath;
 import org.freedesktop.dbus.connections.impl.DBusConnection;
 import org.freedesktop.dbus.exceptions.DBusException;
 import org.freedesktop.dbus.exceptions.DBusExecutionException;
-import org.freedesktop.dbus.interfaces.ObjectManager;
 import org.freedesktop.dbus.interfaces.Properties;
-import org.freedesktop.dbus.types.UInt32;
 import org.freedesktop.dbus.types.Variant;
 import org.freedesktop.modemmanager1.Modem;
 import org.freedesktop.modemmanager1.modem.Location;
@@ -77,8 +75,6 @@ public class NMDbusConnector {
     private static final String MM_MODEM_NAME = "org.freedesktop.ModemManager1.Modem";
     private static final String MM_SIM_NAME = "org.freedesktop.ModemManager1.Sim";
     private static final String MM_LOCATION_BUS_NAME = "org.freedesktop.ModemManager1.Modem.Location";
-
-    private static final String NM_PROPERTY_VERSION = "Version";
 
     private static final String NM_DEVICE_PROPERTY_INTERFACE = "Interface";
     private static final String NM_DEVICE_PROPERTY_DEVICETYPE = "DeviceType";
@@ -146,10 +142,7 @@ public class NMDbusConnector {
     }
 
     public void checkVersion() throws DBusException {
-        Properties nmProperties = this.dbusConnection.getRemoteObject(NM_BUS_NAME, NM_BUS_PATH, Properties.class);
-
-        String nmVersion = nmProperties.Get(NM_BUS_NAME, NM_PROPERTY_VERSION);
-
+        String nmVersion = this.nm.getVersion();
         logger.debug("NM Version: {}", nmVersion);
     }
 
