@@ -57,49 +57,49 @@ public class NMDbusWrapper {
     private DBusConnection dbusConnection;
     private NetworkManager networkManager;
 
-    public NMDbusWrapper(DBusConnection dbusConnection) throws DBusException {
+    protected NMDbusWrapper(DBusConnection dbusConnection) throws DBusException {
         this.dbusConnection = dbusConnection;
         this.networkManager = this.dbusConnection.getRemoteObject(NM_BUS_NAME, NM_BUS_PATH, NetworkManager.class);
     }
 
-    public Map<String, String> getPermissions() {
+    protected Map<String, String> getPermissions() {
         return this.networkManager.GetPermissions();
     }
 
-    public String getVersion() throws DBusException {
+    protected String getVersion() throws DBusException {
         Properties nmProperties = this.dbusConnection.getRemoteObject(NM_BUS_NAME, NM_BUS_PATH, Properties.class);
         return nmProperties.Get(NM_BUS_NAME, NM_PROPERTY_VERSION);
     }
 
-    public String getDeviceInterface(Device device) throws DBusException {
+    protected String getDeviceInterface(Device device) throws DBusException {
         Properties deviceProperties = this.dbusConnection.getRemoteObject(NM_BUS_NAME, device.getObjectPath(),
                 Properties.class);
 
         return deviceProperties.Get(NM_DEVICE_BUS_NAME, NM_DEVICE_PROPERTY_INTERFACE);
     }
 
-    public NMDeviceState getDeviceState(Device device) throws DBusException {
+    protected NMDeviceState getDeviceState(Device device) throws DBusException {
         Properties deviceProperties = this.dbusConnection.getRemoteObject(NM_BUS_NAME, device.getObjectPath(),
                 Properties.class);
 
         return NMDeviceState.fromUInt32(deviceProperties.Get(NM_DEVICE_BUS_NAME, NM_DEVICE_PROPERTY_STATE));
     }
 
-    public void setDeviceManaged(Device device, Boolean manage) throws DBusException {
+    protected void setDeviceManaged(Device device, Boolean manage) throws DBusException {
         Properties deviceProperties = this.dbusConnection.getRemoteObject(NM_BUS_NAME, device.getObjectPath(),
                 Properties.class);
 
         deviceProperties.Set(NM_DEVICE_BUS_NAME, NM_DEVICE_PROPERTY_MANAGED, manage);
     }
 
-    public Boolean isDeviceManaged(Device device) throws DBusException {
+    protected Boolean isDeviceManaged(Device device) throws DBusException {
         Properties deviceProperties = this.dbusConnection.getRemoteObject(NM_BUS_NAME, device.getObjectPath(),
                 Properties.class);
 
         return deviceProperties.Get(NM_DEVICE_BUS_NAME, NM_DEVICE_PROPERTY_MANAGED);
     }
 
-    public NMDeviceType getDeviceType(String deviceDbusPath) throws DBusException {
+    protected NMDeviceType getDeviceType(String deviceDbusPath) throws DBusException {
         Properties deviceProperties = this.dbusConnection.getRemoteObject(NM_BUS_NAME, deviceDbusPath,
                 Properties.class);
 
@@ -121,7 +121,7 @@ public class NMDbusWrapper {
         return deviceType;
     }
 
-    public List<Device> getAllDevices() throws DBusException {
+    protected List<Device> getAllDevices() throws DBusException {
         List<DBusPath> devicePaths = this.networkManager.GetAllDevices();
 
         List<Device> devices = new ArrayList<>();
@@ -132,7 +132,7 @@ public class NMDbusWrapper {
         return devices;
     }
 
-    public Optional<Connection> getAssociatedConnection(Device dev) throws DBusException {
+    protected Optional<Connection> getAssociatedConnection(Device dev) throws DBusException {
         Optional<Connection> appliedConnection = getAppliedConnection(dev);
         if (appliedConnection.isPresent()) {
             return appliedConnection;
@@ -150,7 +150,7 @@ public class NMDbusWrapper {
         }
     }
 
-    public List<Connection> getAvaliableConnections(Device dev) throws DBusException {
+    protected List<Connection> getAvaliableConnections(Device dev) throws DBusException {
         List<Connection> connections = new ArrayList<>();
 
         try {
@@ -185,7 +185,7 @@ public class NMDbusWrapper {
         return connections;
     }
 
-    public Optional<Connection> getAppliedConnection(Device dev) throws DBusException {
+    protected Optional<Connection> getAppliedConnection(Device dev) throws DBusException {
         try {
             Map<String, Map<String, Variant<?>>> connectionSettings = dev.GetAppliedConnection(new UInt32(0))
                     .getConnection();
@@ -203,12 +203,12 @@ public class NMDbusWrapper {
         return Optional.empty();
     }
 
-    public void activateConnection(Connection connection, Device device) throws DBusException {
+    protected void activateConnection(Connection connection, Device device) throws DBusException {
         this.networkManager.ActivateConnection(new DBusPath(connection.getObjectPath()),
                 new DBusPath(device.getObjectPath()), new DBusPath("/"));
     }
 
-    public List<Properties> getAllAccessPoints(Wireless wirelessDevice) throws DBusException {
+    protected List<Properties> getAllAccessPoints(Wireless wirelessDevice) throws DBusException {
         List<DBusPath> accessPointPaths = wirelessDevice.GetAllAccessPoints();
 
         List<Properties> accessPointProperties = new ArrayList<>();
@@ -223,7 +223,7 @@ public class NMDbusWrapper {
         return accessPointProperties;
     }
 
-    public String getDeviceId(String deviceDbusPath) throws DBusException {
+    protected String getDeviceId(String deviceDbusPath) throws DBusException {
         Properties nmModemProperties = this.dbusConnection.getRemoteObject(NM_BUS_NAME, deviceDbusPath,
                 Properties.class);
         String deviceId = (String) nmModemProperties.Get(NM_DEVICE_BUS_NAME + ".Modem", "DeviceId");
@@ -231,7 +231,7 @@ public class NMDbusWrapper {
         return deviceId;
     }
 
-    public Optional<String> getModemManagerDbusPath(String deviceDbusPath) throws DBusException {
+    protected Optional<String> getModemManagerDbusPath(String deviceDbusPath) throws DBusException {
         Properties deviceProperties = this.dbusConnection.getRemoteObject(NM_BUS_NAME, deviceDbusPath,
                 Properties.class);
         String modemDbusPath = (String) deviceProperties.Get(NM_DEVICE_BUS_NAME, "Udi");

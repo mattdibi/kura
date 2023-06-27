@@ -42,11 +42,11 @@ public class MMDbusWrapper {
 
     private final Map<String, NMModemResetHandler> modemHandlers = new HashMap<>();
 
-    public MMDbusWrapper(DBusConnection dbusConnection) {
+    protected MMDbusWrapper(DBusConnection dbusConnection) {
         this.dbusConnection = dbusConnection;
     }
 
-    public Map<DBusPath, Map<String, Map<String, Variant<?>>>> getManagedObjects() throws DBusException {
+    protected Map<DBusPath, Map<String, Map<String, Variant<?>>>> getManagedObjects() throws DBusException {
         ObjectManager objectManager = this.dbusConnection.getRemoteObject(MM_BUS_NAME, MM_BUS_PATH,
                 ObjectManager.class);
         Map<DBusPath, Map<String, Map<String, Variant<?>>>> managedObjects = objectManager.GetManagedObjects();
@@ -54,7 +54,7 @@ public class MMDbusWrapper {
         return managedObjects;
     }
 
-    public Optional<Properties> getModemProperties(String modemPath) throws DBusException {
+    protected Optional<Properties> getModemProperties(String modemPath) throws DBusException {
         Optional<Properties> modemProperties = Optional.empty();
         Properties properties = this.dbusConnection.getRemoteObject(MM_BUS_NAME, modemPath, Properties.class);
         if (Objects.nonNull(properties)) {
@@ -63,7 +63,7 @@ public class MMDbusWrapper {
         return modemProperties;
     }
 
-    public List<SimProperties> getModemSimProperties(Properties modemProperties) throws DBusException {
+    protected List<SimProperties> getModemSimProperties(Properties modemProperties) throws DBusException {
         List<SimProperties> simProperties = new ArrayList<>();
         try {
             UInt32 primarySimSlot = modemProperties.Get(MM_MODEM_NAME, "PrimarySimSlot");
@@ -106,7 +106,7 @@ public class MMDbusWrapper {
         return simProperties;
     }
 
-    public List<Properties> getModemBearersProperties(String modemPath, Properties modemProperties)
+    protected List<Properties> getModemBearersProperties(String modemPath, Properties modemProperties)
             throws DBusException {
         List<Properties> bearerProperties = new ArrayList<>();
         try {
@@ -126,7 +126,7 @@ public class MMDbusWrapper {
         return bearerProperties;
     }
 
-    public List<Properties> getBearersPropertiesFromPaths(List<DBusPath> bearerPaths) throws DBusException {
+    protected List<Properties> getBearersPropertiesFromPaths(List<DBusPath> bearerPaths) throws DBusException {
         List<Properties> bearerProperties = new ArrayList<>();
         for (DBusPath bearerPath : bearerPaths) {
             if (!bearerPath.getPath().equals("/")) {
@@ -138,7 +138,7 @@ public class MMDbusWrapper {
 
     }
 
-    public void enableModem(String modemDevicePath) throws DBusException {
+    protected void enableModem(String modemDevicePath) throws DBusException {
         Modem modem = this.dbusConnection.getRemoteObject(MM_BUS_NAME, modemDevicePath, Modem.class);
         Properties modemProperties = this.dbusConnection.getRemoteObject(MM_BUS_NAME, modemDevicePath,
                 Properties.class);
@@ -152,7 +152,7 @@ public class MMDbusWrapper {
         }
     }
 
-    public void handleModemManagerGPSSetup(Optional<String> modemDevicePath, Optional<Boolean> enableGPS)
+    protected void handleModemManagerGPSSetup(Optional<String> modemDevicePath, Optional<Boolean> enableGPS)
             throws DBusException {
 
         if (!modemDevicePath.isPresent()) {
@@ -204,7 +204,7 @@ public class MMDbusWrapper {
         }
     }
 
-    public void resetHandlerEnable(String deviceId, Optional<String> mmDBusPath, int delayMinutes, String nmDbusPath)
+    protected void resetHandlerEnable(String deviceId, Optional<String> mmDBusPath, int delayMinutes, String nmDbusPath)
             throws DBusException {
         if (!mmDBusPath.isPresent()) {
             logger.warn("Cannot retrieve modem device for {}. Skipping modem reset monitor setup.", deviceId);
@@ -220,14 +220,14 @@ public class MMDbusWrapper {
         this.dbusConnection.addSigHandler(Device.StateChanged.class, resetHandler);
     }
 
-    public void resetHandlersDisable() {
+    protected void resetHandlersDisable() {
         for (String deviceId : this.modemHandlers.keySet()) {
             resetHandlersDisable(deviceId);
         }
         this.modemHandlers.clear();
     }
 
-    public void resetHandlersDisable(String deviceId) {
+    protected void resetHandlersDisable(String deviceId) {
         if (this.modemHandlers.containsKey(deviceId)) {
             NMModemResetHandler handler = this.modemHandlers.get(deviceId);
             handler.clearTimer();
