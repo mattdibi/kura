@@ -278,7 +278,7 @@ public class NMDbusConnector {
         Properties wirelessDeviceProperties = this.dbusConnection.getRemoteObject(NM_BUS_NAME,
                 wirelessDevice.getObjectPath(), Properties.class);
 
-        List<Properties> accessPoints = getAllAccessPoints(wirelessDevice);
+        List<Properties> accessPoints = this.nm.getAllAccessPoints(wirelessDevice);
 
         DBusPath activeAccessPointPath = wirelessDeviceProperties.Get(NM_DEVICE_WIRELESS_BUS_NAME, "ActiveAccessPoint");
         Optional<Properties> activeAccessPoint = Optional.empty();
@@ -582,21 +582,6 @@ public class NMDbusConnector {
         }
     }
 
-    private List<Properties> getAllAccessPoints(Wireless wirelessDevice) throws DBusException {
-        List<DBusPath> accessPointPaths = wirelessDevice.GetAllAccessPoints();
-
-        List<Properties> accessPointProperties = new ArrayList<>();
-
-        for (DBusPath path : accessPointPaths) {
-            Properties apProperties = this.dbusConnection.getRemoteObject(NM_BUS_NAME, path.getPath(),
-                    Properties.class);
-            accessPointProperties.add(apProperties);
-
-        }
-
-        return accessPointProperties;
-    }
-
     private Optional<Device> getDeviceByInterfaceId(String interfaceId) throws DBusException {
         for (Device d : this.nm.getAllDevices()) {
             Properties deviceProperties = this.dbusConnection.getRemoteObject(NM_BUS_NAME, d.getObjectPath(),
@@ -675,14 +660,6 @@ public class NMDbusConnector {
         }
     }
 
-    private String getDeviceIdFromNM(String deviceDbusPath) throws DBusException {
-        Properties nmModemProperties = this.dbusConnection.getRemoteObject(NM_BUS_NAME, deviceDbusPath,
-                Properties.class);
-        String deviceId = (String) nmModemProperties.Get(NM_DEVICE_BUS_NAME + ".Modem", "DeviceId");
-        logger.debug("Found DeviceId {} for device {}", deviceId, deviceDbusPath);
-        return deviceId;
-    }
-
     private Map<DBusPath, Map<String, Map<String, Variant<?>>>> getManagedObjectsFromMM() throws DBusException {
         ObjectManager objectManager = this.dbusConnection.getRemoteObject(MM_BUS_NAME, MM_BUS_PATH,
                 ObjectManager.class);
@@ -707,7 +684,7 @@ public class NMDbusConnector {
     }
 
     private Optional<String> getModemPathFromMM(String devicePath) throws DBusException {
-        String deviceId = getDeviceIdFromNM(devicePath);
+        String deviceId = this.nm.getDeviceId(devicePath);
         Map<DBusPath, Map<String, Map<String, Variant<?>>>> managedObjects = getManagedObjectsFromMM();
         return getModemPathFromManagedObjects(managedObjects, deviceId);
     }
