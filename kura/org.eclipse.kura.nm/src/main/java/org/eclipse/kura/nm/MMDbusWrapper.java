@@ -204,8 +204,8 @@ public class MMDbusWrapper {
         }
     }
 
-    public void modemResetHandlerEnable(String deviceId, Optional<String> mmDBusPath, int delayMinutes,
-            String nmDbusPath) throws DBusException {
+    public void resetHandlerEnable(String deviceId, Optional<String> mmDBusPath, int delayMinutes, String nmDbusPath)
+            throws DBusException {
         if (!mmDBusPath.isPresent()) {
             logger.warn("Cannot retrieve modem device for {}. Skipping modem reset monitor setup.", deviceId);
             return;
@@ -220,14 +220,14 @@ public class MMDbusWrapper {
         this.dbusConnection.addSigHandler(Device.StateChanged.class, resetHandler);
     }
 
-    public void modemResetHandlersDisable() {
+    public void resetHandlersDisable() {
         for (String deviceId : this.modemHandlers.keySet()) {
-            modemResetHandlersDisable(deviceId);
+            resetHandlersDisable(deviceId);
         }
         this.modemHandlers.clear();
     }
 
-    public void modemResetHandlersDisable(String deviceId) {
+    public void resetHandlersDisable(String deviceId) {
         if (this.modemHandlers.containsKey(deviceId)) {
             NMModemResetHandler handler = this.modemHandlers.get(deviceId);
             handler.clearTimer();

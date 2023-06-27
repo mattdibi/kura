@@ -278,7 +278,7 @@ public class NMDbusConnector {
     public synchronized void apply(Map<String, Object> networkConfiguration) throws DBusException {
         try {
             configurationEnforcementDisable();
-            this.mm.modemResetHandlersDisable();
+            this.mm.resetHandlersDisable();
             doApply(networkConfiguration);
             this.cachedConfiguration = networkConfiguration;
         } finally {
@@ -293,7 +293,7 @@ public class NMDbusConnector {
         }
         try {
             configurationEnforcementDisable();
-            this.mm.modemResetHandlersDisable();
+            this.mm.resetHandlersDisable();
             doApply(this.cachedConfiguration);
         } finally {
             configurationEnforcementEnable();
@@ -310,7 +310,7 @@ public class NMDbusConnector {
         }
         try {
             configurationEnforcementDisable();
-            this.mm.modemResetHandlersDisable(deviceId);
+            this.mm.resetHandlersDisable(deviceId);
             doApply(deviceId, this.cachedConfiguration);
         } finally {
             configurationEnforcementEnable();
@@ -426,7 +426,7 @@ public class NMDbusConnector {
 
             if (delayMinutes != 0) {
                 Optional<String> mmDBusPath = this.nm.getModemManagerDbusPath(device.getObjectPath());
-                this.mm.modemResetHandlerEnable(deviceId, mmDBusPath, delayMinutes, device.getObjectPath());
+                this.mm.resetHandlerEnable(deviceId, mmDBusPath, delayMinutes, device.getObjectPath());
             }
         }
 
