@@ -285,7 +285,7 @@ public class NMDbusConnector {
     public synchronized void apply(Map<String, Object> networkConfiguration) throws DBusException {
         try {
             configurationEnforcementDisable();
-            modemResetHandlersDisable();
+            this.mm.modemResetHandlersDisable();
             doApply(networkConfiguration);
             this.cachedConfiguration = networkConfiguration;
         } finally {
@@ -300,7 +300,7 @@ public class NMDbusConnector {
         }
         try {
             configurationEnforcementDisable();
-            modemResetHandlersDisable();
+            this.mm.modemResetHandlersDisable();
             doApply(this.cachedConfiguration);
         } finally {
             configurationEnforcementEnable();
@@ -317,7 +317,7 @@ public class NMDbusConnector {
         }
         try {
             configurationEnforcementDisable();
-            modemResetHandlersDisable(deviceId);
+            this.mm.modemResetHandlersDisable(deviceId);
             doApply(deviceId, this.cachedConfiguration);
         } finally {
             configurationEnforcementEnable();
@@ -432,7 +432,8 @@ public class NMDbusConnector {
             int delayMinutes = properties.get(Integer.class, "net.interface.%s.config.resetTimeout", deviceId);
 
             if (delayMinutes != 0) {
-                modemResetHandlerEnable(deviceId, delayMinutes, device);
+                Optional<String> mmDBusPath = this.nm.getModemManagerDbusPath(device.getObjectPath());
+                this.mm.modemResetHandlerEnable(deviceId, mmDBusPath, delayMinutes, device.getObjectPath());
             }
         }
 
@@ -542,40 +543,5 @@ public class NMDbusConnector {
             this.dbusConnection.removeSigHandler(NetworkManager.DeviceAdded.class, this.deviceAddedHandler);
         }
         this.configurationEnforcementHandlerIsArmed = false;
-    }
-
-    private void modemResetHandlerEnable(String deviceId, int delayMinutes, Device device) throws DBusException {
-        Optional<String> mmDBusPath = this.nm.getModemManagerDbusPath(device.getObjectPath());
-        if (!mmDBusPath.isPresent()) {
-            logger.warn("Cannot retrieve modem device for {}. Skipping modem reset monitor setup.", deviceId);
-            return;
-        }
-
-        Modem mmModemDevice = this.dbusConnection.getRemoteObject(MM_BUS_NAME, mmDBusPath.get(), Modem.class);
-
-        NMModemResetHandler resetHandler = new NMModemResetHandler(device.getObjectPath(), mmModemDevice,
-                delayMinutes * 60L * 1000L);
-
-        this.modemHandlers.put(deviceId, resetHandler);
-        this.dbusConnection.addSigHandler(Device.StateChanged.class, resetHandler);
-    }
-
-    private void modemResetHandlersDisable() {
-        for (String deviceId : this.modemHandlers.keySet()) {
-            modemResetHandlersDisable(deviceId);
-        }
-        this.modemHandlers.clear();
-    }
-
-    private void modemResetHandlersDisable(String deviceId) {
-        if (this.modemHandlers.containsKey(deviceId)) {
-            NMModemResetHandler handler = this.modemHandlers.get(deviceId);
-            handler.clearTimer();
-            try {
-                this.dbusConnection.removeSigHandler(Device.StateChanged.class, handler);
-            } catch (DBusException e) {
-                logger.warn("Couldn't remove signal handler for: {}. Caused by:", handler.getNMDevicePath(), e);
-            }
-        }
     }
 }
