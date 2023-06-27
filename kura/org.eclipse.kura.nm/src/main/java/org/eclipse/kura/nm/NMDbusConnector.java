@@ -98,6 +98,7 @@ public class NMDbusConnector {
     private static NMDbusConnector instance;
     private final DBusConnection dbusConnection;
     private final NMDbusWrapper nm;
+    private final MMDbusWrapper mm;
 
     private Map<String, Object> cachedConfiguration = null;
 
@@ -111,6 +112,7 @@ public class NMDbusConnector {
     private NMDbusConnector(DBusConnection dbusConnection) throws DBusException {
         this.dbusConnection = Objects.requireNonNull(dbusConnection);
         this.nm = new NMDbusWrapper(this.dbusConnection);
+        this.mm = new MMDbusWrapper(this.dbusConnection);
     }
 
     public static synchronized NMDbusConnector getInstance() throws DBusException {
