@@ -8,7 +8,6 @@ import java.util.Optional;
 
 import org.eclipse.kura.nm.enums.MMModemState;
 import org.eclipse.kura.nm.status.SimProperties;
-import org.freedesktop.ModemManager1;
 import org.freedesktop.dbus.DBusPath;
 import org.freedesktop.dbus.connections.impl.DBusConnection;
 import org.freedesktop.dbus.exceptions.DBusException;
@@ -29,15 +28,12 @@ public class MMDbusWrapper {
     private static final String MM_BUS_PATH = "/org/freedesktop/ModemManager1";
     private static final String MM_MODEM_NAME = "org.freedesktop.ModemManager1.Modem";
     private static final String MM_SIM_NAME = "org.freedesktop.ModemManager1.Sim";
-    private static final String MM_LOCATION_BUS_NAME = "org.freedesktop.ModemManager1.Modem.Location";
     private static final String MM_MODEM_PROPERTY_STATE = "State";
 
     private DBusConnection dbusConnection;
-    private ModemManager1 modemManager;
 
-    public MMDbusWrapper(DBusConnection dbusConnection) throws DBusException {
+    public MMDbusWrapper(DBusConnection dbusConnection) {
         this.dbusConnection = dbusConnection;
-        this.modemManager = dbusConnection.getRemoteObject(MM_BUS_PATH, MM_BUS_NAME, ModemManager1.class);
     }
 
     public Map<DBusPath, Map<String, Map<String, Variant<?>>>> getManagedObjects() throws DBusException {
