@@ -45,11 +45,6 @@ public class NMDbusWrapper {
     private static final String NM_DEVICE_WIRELESS_BUS_NAME = "org.freedesktop.NetworkManager.Device.Wireless";
     private static final String NM_GENERIC_DEVICE_BUS_NAME = "org.freedesktop.NetworkManager.Device.Generic";
     private static final String NM_SETTINGS_BUS_PATH = "/org/freedesktop/NetworkManager/Settings";
-    private static final String MM_BUS_NAME = "org.freedesktop.ModemManager1";
-    private static final String MM_BUS_PATH = "/org/freedesktop/ModemManager1";
-    private static final String MM_MODEM_NAME = "org.freedesktop.ModemManager1.Modem";
-    private static final String MM_SIM_NAME = "org.freedesktop.ModemManager1.Sim";
-    private static final String MM_LOCATION_BUS_NAME = "org.freedesktop.ModemManager1.Modem.Location";
 
     private static final String NM_PROPERTY_VERSION = "Version";
 

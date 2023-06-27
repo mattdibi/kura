@@ -258,10 +258,10 @@ public class NMDbusConnector {
         List<SimProperties> simProperties = Collections.emptyList();
         List<Properties> bearerProperties = Collections.emptyList();
         if (modemPath.isPresent()) {
-            modemDeviceProperties = getModemProperties(modemPath.get());
+            modemDeviceProperties = this.mm.getModemProperties(modemPath.get());
             if (modemDeviceProperties.isPresent()) {
-                simProperties = getModemSimProperties(modemDeviceProperties.get());
-                bearerProperties = getModemBearersProperties(modemPath.get(), modemDeviceProperties.get());
+                simProperties = this.mm.getModemSimProperties(modemDeviceProperties.get());
+                bearerProperties = this.mm.getModemBearersProperties(modemPath.get(), modemDeviceProperties.get());
             }
         }
         DevicePropertiesWrapper modemPropertiesWrapper = new DevicePropertiesWrapper(deviceProperties,
@@ -550,7 +550,7 @@ public class NMDbusConnector {
             if (!modemPath.isPresent()) {
                 throw new IllegalStateException(String.format("Cannot retrieve modem path for: %s.", dbusPath));
             }
-            Optional<Properties> modemDeviceProperties = getModemProperties(modemPath.get());
+            Optional<Properties> modemDeviceProperties = this.mm.getModemProperties(modemPath.get());
             if (!modemDeviceProperties.isPresent()) {
                 throw new IllegalStateException(String.format("Cannot retrieve modem properties for: %s.", dbusPath));
 
@@ -593,7 +593,7 @@ public class NMDbusConnector {
             if (deviceType.equals(NMDeviceType.NM_DEVICE_TYPE_MODEM)) {
                 Optional<String> modemPath = getModemPathFromMM(d.getObjectPath());
                 if (modemPath.isPresent()) {
-                    Optional<Properties> modemDeviceProperties = getModemProperties(modemPath.get());
+                    Optional<Properties> modemDeviceProperties = this.mm.getModemProperties(modemPath.get());
                     if (modemDeviceProperties.isPresent() && NMStatusConverter
                             .getModemDeviceHwPath(modemDeviceProperties.get()).equals(interfaceId)) {
                         return Optional.of(d);
@@ -662,12 +662,10 @@ public class NMDbusConnector {
         }
     }
 
-    private Map<DBusPath, Map<String, Map<String, Variant<?>>>> getManagedObjectsFromMM() throws DBusException {
-        ObjectManager objectManager = this.dbusConnection.getRemoteObject(MM_BUS_NAME, MM_BUS_PATH,
-                ObjectManager.class);
-        Map<DBusPath, Map<String, Map<String, Variant<?>>>> managedObjects = objectManager.GetManagedObjects();
-        logger.debug("Found Managed Objects {}", managedObjects.keySet());
-        return managedObjects;
+    private Optional<String> getModemPathFromMM(String devicePath) throws DBusException {
+        String deviceId = this.nm.getDeviceId(devicePath);
+        Map<DBusPath, Map<String, Map<String, Variant<?>>>> managedObjects = this.mm.getManagedObjects();
+        return getModemPathFromManagedObjects(managedObjects, deviceId);
     }
 
     private Optional<String> getModemPathFromManagedObjects(
@@ -683,94 +681,5 @@ public class NMDbusConnector {
             modemPath = Optional.of(modemEntry.get().getKey().getPath());
         }
         return modemPath;
-    }
-
-    private Optional<String> getModemPathFromMM(String devicePath) throws DBusException {
-        String deviceId = this.nm.getDeviceId(devicePath);
-        Map<DBusPath, Map<String, Map<String, Variant<?>>>> managedObjects = getManagedObjectsFromMM();
-        return getModemPathFromManagedObjects(managedObjects, deviceId);
-    }
-
-    private Optional<Properties> getModemProperties(String modemPath) throws DBusException {
-        Optional<Properties> modemProperties = Optional.empty();
-        Properties properties = this.dbusConnection.getRemoteObject(MM_BUS_NAME, modemPath, Properties.class);
-        if (Objects.nonNull(properties)) {
-            modemProperties = Optional.of(properties);
-        }
-        return modemProperties;
-    }
-
-    private List<SimProperties> getModemSimProperties(Properties modemProperties) throws DBusException {
-        List<SimProperties> simProperties = new ArrayList<>();
-        try {
-            UInt32 primarySimSlot = modemProperties.Get(MM_MODEM_NAME, "PrimarySimSlot");
-
-            if (primarySimSlot.intValue() == 0) {
-                // Multiple SIM slots aren't supported
-                DBusPath simPath = modemProperties.Get(MM_MODEM_NAME, "Sim");
-                if (!simPath.getPath().equals("/")) {
-                    Properties simProp = this.dbusConnection.getRemoteObject(MM_BUS_NAME, simPath.getPath(),
-                            Properties.class);
-                    simProperties.add(new SimProperties(simProp, true, true));
-                }
-            } else {
-                List<DBusPath> simPaths = modemProperties.Get(MM_MODEM_NAME, "SimSlots");
-                for (int index = 0; index < simPaths.size(); index++) {
-                    String dbusPath = simPaths.get(index).getPath();
-
-                    if (dbusPath.equals("/")) {
-                        // SIM slot doesn't contain a SIM
-                        continue;
-                    }
-
-                    Properties simProp = this.dbusConnection.getRemoteObject(MM_BUS_NAME, dbusPath, Properties.class);
-                    boolean isActive = simProp.Get(MM_SIM_NAME, "Active");
-                    boolean isPrimary = index == (primarySimSlot.intValue() - 1);
-
-                    simProperties.add(new SimProperties(simProp, isActive, isPrimary));
-                }
-            }
-        } catch (DBusExecutionException e) {
-            // Fallback for ModemManager version prior to 1.16
-            DBusPath simPath = modemProperties.Get(MM_MODEM_NAME, "Sim");
-            if (!simPath.getPath().equals("/")) {
-                Properties simProp = this.dbusConnection.getRemoteObject(MM_BUS_NAME, simPath.getPath(),
-                        Properties.class);
-                simProperties.add(new SimProperties(simProp, true, true));
-            }
-
-        }
-        return simProperties;
-    }
-
-    private List<Properties> getModemBearersProperties(String modemPath, Properties modemProperties)
-            throws DBusException {
-        List<Properties> bearerProperties = new ArrayList<>();
-        try {
-            Modem modem = this.dbusConnection.getRemoteObject(MM_BUS_NAME, modemPath, Modem.class);
-            if (Objects.nonNull(modem)) {
-                List<DBusPath> bearerPaths = modem.ListBearers();
-                bearerProperties = getBearersPropertiesFromPaths(bearerPaths);
-            }
-        } catch (DBusExecutionException e) {
-            try {
-                List<DBusPath> bearerPaths = modemProperties.Get(MM_BUS_NAME, "Bearers");
-                bearerProperties = getBearersPropertiesFromPaths(bearerPaths);
-            } catch (DBusExecutionException e1) {
-                logger.warn("Cannot get bearers for modem {}", modemPath, e1);
-            }
-        }
-        return bearerProperties;
-    }
-
-    private List<Properties> getBearersPropertiesFromPaths(List<DBusPath> bearerPaths) throws DBusException {
-        List<Properties> bearerProperties = new ArrayList<>();
-        for (DBusPath bearerPath : bearerPaths) {
-            if (!bearerPath.getPath().equals("/")) {
-                bearerProperties
-                        .add(this.dbusConnection.getRemoteObject(MM_BUS_NAME, bearerPath.getPath(), Properties.class));
-            }
-        }
-        return bearerProperties;
     }
 }
