@@ -15,7 +15,6 @@ package org.eclipse.kura.nm;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,7 +22,6 @@ import java.util.Map.Entry;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 
 import org.eclipse.kura.KuraException;
 import org.eclipse.kura.executor.CommandExecutorService;
@@ -31,8 +29,6 @@ import org.eclipse.kura.linux.net.util.IwCapabilityTool;
 import org.eclipse.kura.net.status.NetworkInterfaceStatus;
 import org.eclipse.kura.net.wifi.WifiChannel;
 import org.eclipse.kura.nm.configuration.NMSettingsConverter;
-import org.eclipse.kura.nm.enums.MMModemLocationSource;
-import org.eclipse.kura.nm.enums.MMModemState;
 import org.eclipse.kura.nm.enums.NMDeviceState;
 import org.eclipse.kura.nm.enums.NMDeviceType;
 import org.eclipse.kura.nm.signal.handlers.DeviceStateLock;
@@ -52,7 +48,6 @@ import org.freedesktop.dbus.exceptions.DBusExecutionException;
 import org.freedesktop.dbus.interfaces.Properties;
 import org.freedesktop.dbus.types.Variant;
 import org.freedesktop.modemmanager1.Modem;
-import org.freedesktop.modemmanager1.modem.Location;
 import org.freedesktop.networkmanager.Device;
 import org.freedesktop.networkmanager.Settings;
 import org.freedesktop.networkmanager.device.Wired;
@@ -66,15 +61,11 @@ public class NMDbusConnector {
     private static final Logger logger = LoggerFactory.getLogger(NMDbusConnector.class);
 
     private static final String NM_BUS_NAME = "org.freedesktop.NetworkManager";
-    private static final String NM_BUS_PATH = "/org/freedesktop/NetworkManager";
     private static final String NM_DEVICE_BUS_NAME = "org.freedesktop.NetworkManager.Device";
     private static final String NM_DEVICE_WIRELESS_BUS_NAME = "org.freedesktop.NetworkManager.Device.Wireless";
     private static final String NM_SETTINGS_BUS_PATH = "/org/freedesktop/NetworkManager/Settings";
+
     private static final String MM_BUS_NAME = "org.freedesktop.ModemManager1";
-    private static final String MM_BUS_PATH = "/org/freedesktop/ModemManager1";
-    private static final String MM_MODEM_NAME = "org.freedesktop.ModemManager1.Modem";
-    private static final String MM_SIM_NAME = "org.freedesktop.ModemManager1.Sim";
-    private static final String MM_LOCATION_BUS_NAME = "org.freedesktop.ModemManager1.Modem.Location";
 
     private static final String NM_DEVICE_PROPERTY_INTERFACE = "Interface";
     private static final String NM_DEVICE_PROPERTY_DEVICETYPE = "DeviceType";
