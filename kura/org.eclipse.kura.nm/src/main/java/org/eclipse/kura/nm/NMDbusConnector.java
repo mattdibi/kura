@@ -244,7 +244,7 @@ public class NMDbusConnector {
     private NetworkInterfaceStatus createModemStatus(String interfaceId, Device device, Properties deviceProperties,
             Optional<Properties> ip4configProperties) throws DBusException {
         NetworkInterfaceStatus networkInterfaceStatus;
-        Optional<String> modemPath = getModemPathFromMM(device.getObjectPath());
+        Optional<String> modemPath = this.nm.getModemManagerDbusPath(device.getObjectPath());
         Optional<Properties> modemDeviceProperties = Optional.empty();
         List<SimProperties> simProperties = Collections.emptyList();
         List<Properties> bearerProperties = Collections.emptyList();
@@ -468,7 +468,7 @@ public class NMDbusConnector {
     }
 
     private void handleModemManagerGPSSetup(Device device, Optional<Boolean> enableGPS) throws DBusException {
-        Optional<String> modemDevicePath = getModemPathFromMM(device.getObjectPath());
+        Optional<String> modemDevicePath = this.nm.getModemManagerDbusPath(device.getObjectPath());
 
         if (!modemDevicePath.isPresent()) {
             logger.warn("Cannot retrieve MM.Modem from NM.Modem at path: {}. Skipping GPS configuration.",
@@ -523,7 +523,7 @@ public class NMDbusConnector {
     public String getDeviceIdByDBusPath(String dbusPath) throws DBusException {
         NMDeviceType deviceType = this.nm.getDeviceType(dbusPath);
         if (deviceType.equals(NMDeviceType.NM_DEVICE_TYPE_MODEM)) {
-            Optional<String> modemPath = getModemPathFromMM(dbusPath);
+            Optional<String> modemPath = this.nm.getModemManagerDbusPath(dbusPath);
             if (!modemPath.isPresent()) {
                 throw new IllegalStateException(String.format("Cannot retrieve modem path for: %s.", dbusPath));
             }
@@ -568,7 +568,7 @@ public class NMDbusConnector {
             NMDeviceType deviceType = NMDeviceType
                     .fromUInt32(deviceProperties.Get(NM_DEVICE_BUS_NAME, NM_DEVICE_PROPERTY_DEVICETYPE));
             if (deviceType.equals(NMDeviceType.NM_DEVICE_TYPE_MODEM)) {
-                Optional<String> modemPath = getModemPathFromMM(d.getObjectPath());
+                Optional<String> modemPath = this.nm.getModemManagerDbusPath(d.getObjectPath());
                 if (modemPath.isPresent()) {
                     Optional<Properties> modemDeviceProperties = this.mm.getModemProperties(modemPath.get());
                     if (modemDeviceProperties.isPresent() && NMStatusConverter
@@ -605,7 +605,7 @@ public class NMDbusConnector {
     }
 
     private void modemResetHandlerEnable(String deviceId, int delayMinutes, Device device) throws DBusException {
-        Optional<String> mmDBusPath = getModemPathFromMM(device.getObjectPath());
+        Optional<String> mmDBusPath = this.nm.getModemManagerDbusPath(device.getObjectPath());
         if (!mmDBusPath.isPresent()) {
             logger.warn("Cannot retrieve modem device for {}. Skipping modem reset monitor setup.", deviceId);
             return;
@@ -637,26 +637,5 @@ public class NMDbusConnector {
                 logger.warn("Couldn't remove signal handler for: {}. Caused by:", handler.getNMDevicePath(), e);
             }
         }
-    }
-
-    private Optional<String> getModemPathFromMM(String devicePath) throws DBusException {
-        String deviceId = this.nm.getDeviceId(devicePath);
-        Map<DBusPath, Map<String, Map<String, Variant<?>>>> managedObjects = this.mm.getManagedObjects();
-        return getModemPathFromManagedObjects(managedObjects, deviceId);
-    }
-
-    private Optional<String> getModemPathFromManagedObjects(
-            Map<DBusPath, Map<String, Map<String, Variant<?>>>> managedObjects, String deviceId) {
-        Optional<String> modemPath = Optional.empty();
-        Optional<Entry<DBusPath, Map<String, Map<String, Variant<?>>>>> modemEntry = managedObjects.entrySet().stream()
-                .filter(entry -> {
-                    String modemDeviceId = (String) entry.getValue().get(MM_MODEM_NAME).get("DeviceIdentifier")
-                            .getValue();
-                    return modemDeviceId.equals(deviceId);
-                }).findFirst();
-        if (modemEntry.isPresent()) {
-            modemPath = Optional.of(modemEntry.get().getKey().getPath());
-        }
-        return modemPath;
     }
 }

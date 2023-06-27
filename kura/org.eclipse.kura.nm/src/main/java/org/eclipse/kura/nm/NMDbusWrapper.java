@@ -233,4 +233,19 @@ public class NMDbusWrapper {
         return deviceId;
     }
 
+    public Optional<String> getModemManagerDbusPath(String deviceDbusPath) throws DBusException {
+        Properties deviceProperties = this.dbusConnection.getRemoteObject(NM_BUS_NAME, deviceDbusPath,
+                Properties.class);
+        String modemDbusPath = (String) deviceProperties.Get(NM_DEVICE_BUS_NAME, "Udi");
+
+        // Check that modemDbusPath is not null and that it is a modemmanager dbus path
+        if (modemDbusPath == null || !modemDbusPath.startsWith("/org/freedesktop/ModemManager1")) {
+            logger.debug("Could not find ModemDbusPath for device {}", deviceDbusPath);
+            return Optional.empty();
+        }
+
+        logger.debug("Found ModemDbusPath {} for device {}", modemDbusPath, deviceDbusPath);
+        return Optional.of(modemDbusPath);
+    }
+
 }
