@@ -393,7 +393,8 @@ public class NMDbusConnector {
         if (deviceType == NMDeviceType.NM_DEVICE_TYPE_MODEM) {
             Optional<Boolean> enableGPS = properties.getOpt(Boolean.class, "net.interface.%s.config.gpsEnabled",
                     deviceId);
-            handleModemManagerGPSSetup(device, enableGPS);
+            Optional<String> mmDbusPath = this.nm.getModemManagerDbusPath(device.getObjectPath());
+            this.mm.handleModemManagerGPSSetup(mmDbusPath, enableGPS);
         }
     }
 
@@ -463,60 +464,8 @@ public class NMDbusConnector {
         disable(device);
 
         if (deviceType == NMDeviceType.NM_DEVICE_TYPE_MODEM) {
-            handleModemManagerGPSSetup(device, Optional.of(false));
-        }
-    }
-
-    private void handleModemManagerGPSSetup(Device device, Optional<Boolean> enableGPS) throws DBusException {
-        Optional<String> modemDevicePath = this.nm.getModemManagerDbusPath(device.getObjectPath());
-
-        if (!modemDevicePath.isPresent()) {
-            logger.warn("Cannot retrieve MM.Modem from NM.Modem at path: {}. Skipping GPS configuration.",
-                    device.getObjectPath());
-            return;
-        }
-
-        this.mm.enableModem(modemDevicePath.get());
-
-        boolean isGPSSourceEnabled = enableGPS.isPresent() && enableGPS.get();
-
-        Location modemLocation = this.dbusConnection.getRemoteObject(MM_BUS_NAME, modemDevicePath.get(),
-                Location.class);
-        Properties modemLocationProperties = this.dbusConnection.getRemoteObject(MM_BUS_NAME,
-                modemLocation.getObjectPath(), Properties.class);
-
-        Set<MMModemLocationSource> availableLocationSources = EnumSet
-                .of(MMModemLocationSource.MM_MODEM_LOCATION_SOURCE_NONE);
-        Set<MMModemLocationSource> currentLocationSources = EnumSet
-                .of(MMModemLocationSource.MM_MODEM_LOCATION_SOURCE_NONE);
-        Set<MMModemLocationSource> desiredLocationSources = EnumSet
-                .of(MMModemLocationSource.MM_MODEM_LOCATION_SOURCE_NONE);
-
-        try {
-            availableLocationSources = MMModemLocationSource.toMMModemLocationSourceFromBitMask(
-                    modemLocationProperties.Get(MM_LOCATION_BUS_NAME, "Capabilities"));
-            currentLocationSources = MMModemLocationSource
-                    .toMMModemLocationSourceFromBitMask(modemLocationProperties.Get(MM_LOCATION_BUS_NAME, "Enabled"));
-        } catch (DBusExecutionException e) {
-            logger.warn("Cannot retrive Modem.Location capabilities for {}. Caused by: ",
-                    modemLocationProperties.getObjectPath(), e);
-            return;
-        }
-
-        if (isGPSSourceEnabled) {
-            if (!availableLocationSources.contains(MMModemLocationSource.MM_MODEM_LOCATION_SOURCE_GPS_UNMANAGED)) {
-                logger.warn("Cannot setup Modem.Location, MM_MODEM_LOCATION_SOURCE_GPS_UNMANAGED not supported for {}",
-                        modemLocationProperties.getObjectPath());
-                return;
-            }
-            desiredLocationSources = EnumSet.of(MMModemLocationSource.MM_MODEM_LOCATION_SOURCE_GPS_UNMANAGED);
-        }
-
-        logger.debug("Modem location setup {} for modem {}", currentLocationSources, modemDevicePath.get());
-
-        if (!currentLocationSources.equals(desiredLocationSources)) {
-            modemLocation.Setup(MMModemLocationSource.toBitMaskFromMMModemLocationSource(desiredLocationSources),
-                    false);
+            Optional<String> mmDbusPath = this.nm.getModemManagerDbusPath(device.getObjectPath());
+            this.mm.handleModemManagerGPSSetup(mmDbusPath, Optional.of(false));
         }
     }
 
