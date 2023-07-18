@@ -1298,7 +1298,7 @@ public class NMDbusConnectorTest {
 
     private void whenGetInterfacesIsCalled() {
         try {
-            this.internalStringList = this.instanceNMDbusConnector.getDeviceIds();
+            this.internalStringList = this.instanceNMDbusConnector.getInterfaceIds();
         } catch (DBusException e) {
             this.hasDBusExceptionBeenThrown = true;
         }

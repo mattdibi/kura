@@ -127,7 +127,7 @@ public class NMDbusConnector {
         logger.debug("NM Version: {}", nmVersion);
     }
 
-    public synchronized List<String> getDeviceIds() throws DBusException {
+    public synchronized List<String> getInterfaceIds() throws DBusException {
         List<Device> availableDevices = this.networkManager.getAllDevices();
 
         List<String> supportedDeviceNames = new ArrayList<>();
