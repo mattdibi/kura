@@ -516,7 +516,7 @@ public class DeploymentAgentTest {
     }
 
     @Test
-    public void getMarketplacePackageDescriptorShouldWork() {
+    public void getMarketplacePackageDescriptorShouldWorkWithCompatible() {
         givenDeploymentAgent();
         givenSystemServiceReturnsCurrentKuraVersion("5.4.0");
         givenAMockServerThatReturns("54435", "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + "<marketplace>\n"
@@ -545,13 +545,53 @@ public class DeploymentAgentTest {
                 + "    </versioncompatibility>\n" + "    <environmentrequirements/>\n" + "  </node>\n"
                 + "</marketplace>");
 
-        whenGetMarketplacePackageDescriptorIsCalledFor("http://" + mockServer.getContainerIpAddress() + ":"
-                + mockServer.getServerPort().toString() + "/node/54435/api/p");
+        whenGetMarketplacePackageDescriptorIsCalledFor(
+                "http://" + mockServer.getHost() + ":" + mockServer.getServerPort().toString() + "/node/54435/api/p");
 
         thenDescriptorIsEqualTo(MarketplacePackageDescriptor.builder().nodeId("5514714")
                 .url("https://marketplace.eclipse.org/content/ai-wire-component-eclipse-kura-5")
                 .dpUrl("https://download.eclipse.org/kura/releases/5.3.0/org.eclipse.kura.wire.ai.component.provider-1.2.0.dp")
                 .minKuraVersion("5.1.0").maxKuraVersion("").currentKuraVersion("5.4.0").isCompatible(true).build());
+
+    }
+
+    @Test
+    public void getMarketplacePackageDescriptorShouldWorkWithNotCompatible() {
+        givenDeploymentAgent();
+        givenSystemServiceReturnsCurrentKuraVersion("5.0.0");
+        givenAMockServerThatReturns("54435", "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + "<marketplace>\n"
+                + "  <node id=\"5514714\" name=\"AI Wire Component for Eclipse Kura 5\" url=\"https://marketplace.eclipse.org/content/ai-wire-component-eclipse-kura-5\">\n"
+                + "    <type>iot_package</type>\n" + "    <owner>Matteo Maiero</owner>\n"
+                + "    <favorited>0</favorited>\n" + "    <installstotal>0</installstotal>\n"
+                + "    <installsrecent>0</installsrecent>\n" + "    <shortdescription><![CDATA[]]></shortdescription>\n"
+                + "    <body><![CDATA[<p><strong>OFFICIAL ADD-ON for Eclipse Kura</strong>&nbsp; - This wire component enables Eclipse Kura to interact with an Inference Engine to perform machine learning-related tasks.</p>\n"
+                + "\n"
+                + "<p>This package is an official add-on provided and maintained by the Eclipse Kura Development Team</p>\n"
+                + "\n"
+                + "<p>To install the package, simply drag and drop the Eclipse Marketplace link into the ESF/Kura Packages section of the Web UI.</p>\n"
+                + "\n" + "<p><strong>Compatibility</strong></p>\n" + "\n"
+                + "<p>The bundle requires Eclipse Kura 5.1.0+.</p>\n" + "]]></body>\n"
+                + "    <created>1648566806</created>\n" + "    <changed>1685628355</changed>\n"
+                + "    <foundationmember>1</foundationmember>\n" + "    <homepageurl></homepageurl>\n"
+                + "    <image><![CDATA[https://marketplace.eclipse.org/sites/default/files/styles/badge_logo/public/iot-package/logo/Kura_logo_2_44.png?itok=gr-2SSey]]></image>\n"
+                + "    <screenshot><![CDATA[https://marketplace.eclipse.org/sites/default/files/styles/medium/public/iot-package/screenshot/kura_marketplace_drag_drop_60.png?itok=pitMd0Qe]]></screenshot>\n"
+                + "    <license>EPL 2.0</license>\n" + "    <companyname><![CDATA[Eurotech]]></companyname>\n"
+                + "    <status>Production/Stable</status>\n" + "    <supporturl><![CDATA[]]></supporturl>\n"
+                + "    <version>1.2.0</version>\n" + "    <min_java_version>java_8</min_java_version>\n"
+                + "    <updateurl>https://download.eclipse.org/kura/releases/5.3.0/org.eclipse.kura.wire.ai.component.provider-1.2.0.dp</updateurl>\n"
+                + "    <packagetypes>wire_component</packagetypes>\n"
+                + "    <sourceurl>https://github.com/eclipse/kura/tree/KURA_5.3.0_RELEASE/kura/org.eclipse.kura.wire.ai.component.provider</sourceurl>\n"
+                + "    <versioncompatibility>\n" + "      <from>5.1.0</from>\n" + "      <to></to>\n"
+                + "    </versioncompatibility>\n" + "    <environmentrequirements/>\n" + "  </node>\n"
+                + "</marketplace>");
+
+        whenGetMarketplacePackageDescriptorIsCalledFor(
+                "http://" + mockServer.getHost() + ":" + mockServer.getServerPort().toString() + "/node/54435/api/p");
+
+        thenDescriptorIsEqualTo(MarketplacePackageDescriptor.builder().nodeId("5514714")
+                .url("https://marketplace.eclipse.org/content/ai-wire-component-eclipse-kura-5")
+                .dpUrl("https://download.eclipse.org/kura/releases/5.3.0/org.eclipse.kura.wire.ai.component.provider-1.2.0.dp")
+                .minKuraVersion("5.1.0").maxKuraVersion("").currentKuraVersion("5.0.0").isCompatible(false).build());
 
     }
 
