@@ -27,6 +27,8 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockserver.model.HttpRequest.request;
+import static org.mockserver.model.HttpResponse.response;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -40,21 +42,36 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.eclipse.kura.core.testutil.TestUtil;
+import org.eclipse.kura.deployment.agent.MarketplacePackageDescriptor;
 import org.eclipse.kura.system.SystemService;
+import org.junit.Rule;
 import org.junit.Test;
+import org.mockserver.client.MockServerClient;
 import org.osgi.framework.Version;
 import org.osgi.service.deploymentadmin.DeploymentAdmin;
 import org.osgi.service.deploymentadmin.DeploymentPackage;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventAdmin;
+import org.testcontainers.containers.MockServerContainer;
+import org.testcontainers.utility.DockerImageName;
 
 public class DeploymentAgentTest {
+
+    public static final DockerImageName MOCKSERVER_IMAGE = DockerImageName.parse("mockserver/mockserver")
+            .withTag("mockserver-5.15.0");
+
+    @Rule
+    public MockServerContainer mockServer = new MockServerContainer(MOCKSERVER_IMAGE);
 
     private static final String VERSION_1_0_0 = "1.0.0";
     private static final String DP_NAME = "dpName";
     private DeploymentAgent deploymentAgent;
     private String dpaConfigurationFilepath;
     private DeploymentAgent spiedDeploymentAgent;
+
+    private Object resultingPackageDescriptor;
+
+    private SystemService systemServiceMock = mock(SystemService.class);
 
     private static final String DPA_CONF_PATH_PROPNAME = "dpa.configuration";
 
@@ -498,6 +515,67 @@ public class DeploymentAgentTest {
 
     }
 
+    @Test
+    public void getMarketplacePackageDescriptorShouldWork() {
+        givenDeploymentAgent();
+        givenSystemServiceReturnsCurrentKuraVersion("5.4.0");
+        givenAMockServerThatReturns("54435", "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + "<marketplace>\n"
+                + "  <node id=\"5514714\" name=\"AI Wire Component for Eclipse Kura 5\" url=\"https://marketplace.eclipse.org/content/ai-wire-component-eclipse-kura-5\">\n"
+                + "    <type>iot_package</type>\n" + "    <owner>Matteo Maiero</owner>\n"
+                + "    <favorited>0</favorited>\n" + "    <installstotal>0</installstotal>\n"
+                + "    <installsrecent>0</installsrecent>\n" + "    <shortdescription><![CDATA[]]></shortdescription>\n"
+                + "    <body><![CDATA[<p><strong>OFFICIAL ADD-ON for Eclipse Kura</strong>&nbsp; - This wire component enables Eclipse Kura to interact with an Inference Engine to perform machine learning-related tasks.</p>\n"
+                + "\n"
+                + "<p>This package is an official add-on provided and maintained by the Eclipse Kura Development Team</p>\n"
+                + "\n"
+                + "<p>To install the package, simply drag and drop the Eclipse Marketplace link into the ESF/Kura Packages section of the Web UI.</p>\n"
+                + "\n" + "<p><strong>Compatibility</strong></p>\n" + "\n"
+                + "<p>The bundle requires Eclipse Kura 5.1.0+.</p>\n" + "]]></body>\n"
+                + "    <created>1648566806</created>\n" + "    <changed>1685628355</changed>\n"
+                + "    <foundationmember>1</foundationmember>\n" + "    <homepageurl></homepageurl>\n"
+                + "    <image><![CDATA[https://marketplace.eclipse.org/sites/default/files/styles/badge_logo/public/iot-package/logo/Kura_logo_2_44.png?itok=gr-2SSey]]></image>\n"
+                + "    <screenshot><![CDATA[https://marketplace.eclipse.org/sites/default/files/styles/medium/public/iot-package/screenshot/kura_marketplace_drag_drop_60.png?itok=pitMd0Qe]]></screenshot>\n"
+                + "    <license>EPL 2.0</license>\n" + "    <companyname><![CDATA[Eurotech]]></companyname>\n"
+                + "    <status>Production/Stable</status>\n" + "    <supporturl><![CDATA[]]></supporturl>\n"
+                + "    <version>1.2.0</version>\n" + "    <min_java_version>java_8</min_java_version>\n"
+                + "    <updateurl>https://download.eclipse.org/kura/releases/5.3.0/org.eclipse.kura.wire.ai.component.provider-1.2.0.dp</updateurl>\n"
+                + "    <packagetypes>wire_component</packagetypes>\n"
+                + "    <sourceurl>https://github.com/eclipse/kura/tree/KURA_5.3.0_RELEASE/kura/org.eclipse.kura.wire.ai.component.provider</sourceurl>\n"
+                + "    <versioncompatibility>\n" + "      <from>5.1.0</from>\n" + "      <to></to>\n"
+                + "    </versioncompatibility>\n" + "    <environmentrequirements/>\n" + "  </node>\n"
+                + "</marketplace>");
+
+        whenGetMarketplacePackageDescriptorIsCalledFor("http://" + mockServer.getContainerIpAddress() + ":"
+                + mockServer.getServerPort().toString() + "/node/54435/api/p");
+
+        thenDescriptorIsEqualTo(MarketplacePackageDescriptor.builder().nodeId("5514714")
+                .url("https://marketplace.eclipse.org/content/ai-wire-component-eclipse-kura-5")
+                .dpUrl("https://download.eclipse.org/kura/releases/5.3.0/org.eclipse.kura.wire.ai.component.provider-1.2.0.dp")
+                .minKuraVersion("5.1.0").maxKuraVersion("").currentKuraVersion("5.4.0").isCompatible(true).build());
+
+    }
+
+    private void givenSystemServiceReturnsCurrentKuraVersion(String returnedVersion) {
+        when(this.systemServiceMock.getKuraMarketplaceCompatibilityVersion()).thenReturn(returnedVersion);
+    }
+
+    private void thenDescriptorIsEqualTo(MarketplacePackageDescriptor expectedDescriptor) {
+        assertEquals(expectedDescriptor, this.resultingPackageDescriptor);
+
+    }
+
+    private void whenGetMarketplacePackageDescriptorIsCalledFor(String url) {
+        this.resultingPackageDescriptor = this.deploymentAgent.getMarketplacePackageDescriptor(url, false);
+
+    }
+
+    private void givenAMockServerThatReturns(String nodeId, String responseXML) {
+
+        String url = String.format("/node/%s/api/p", nodeId);
+        MockServerClient mockServerClient = new MockServerClient(mockServer.getHost(), mockServer.getServerPort());
+        mockServerClient.when(request().withPath(url)).respond(response().withBody(responseXML));
+    }
+
     private void givenDpWithUrlScheme(String dpName, String dpUrl) throws IOException {
         FileWriter writer = new FileWriter(dpaConfigurationFilepath);
         writer.write(String.join("=", dpName, dpUrl) + "\n");
@@ -507,7 +585,6 @@ public class DeploymentAgentTest {
     private void givenDeploymentAgent() {
         this.deploymentAgent = new DeploymentAgent();
 
-        SystemService systemServiceMock = mock(SystemService.class);
         Properties properties = new Properties();
 
         properties.put("kura.packages", "fake-packages-path");

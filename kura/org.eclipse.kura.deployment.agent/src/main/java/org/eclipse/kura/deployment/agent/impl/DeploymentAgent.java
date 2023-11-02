@@ -264,14 +264,23 @@ public class DeploymentAgent implements DeploymentAgentService, ConfigurableComp
 
     @Override
     public MarketplacePackageDescriptor getMarketplacePackageDescriptor(String url) {
+        return getMarketplacePackageDescriptor(url, true);
+    }
+
+    public MarketplacePackageDescriptor getMarketplacePackageDescriptor(String url, boolean https) {
         // Note: the url accepted as argument should be already validated and belonging to the
         // Eclipse Marketplace domain such that it allows for downloading the descriptor file.
-        HttpsURLConnection connection = null;
+        HttpURLConnection connection = null;
         MarketplacePackageDescriptorBuilder descriptorBuilder = MarketplacePackageDescriptor.builder();
 
         try {
-            connection = (HttpsURLConnection) new URL(url).openConnection();
-            connection.setSSLSocketFactory(this.sslManagerService.getSSLSocketFactory());
+            if (https) {
+                HttpsURLConnection tmpConnection = (HttpsURLConnection) new URL(url).openConnection();
+                tmpConnection.setSSLSocketFactory(this.sslManagerService.getSSLSocketFactory());
+                connection = tmpConnection;
+            } else {
+                connection = (HttpURLConnection) new URL(url).openConnection();
+            }
 
             connection.setRequestMethod("GET");
             connection.connect();
