@@ -595,22 +595,15 @@ public class DeploymentAgentTest {
 
     }
 
+    /*
+     * GIVEN
+     */
+
     private void givenSystemServiceReturnsCurrentKuraVersion(String returnedVersion) {
         when(this.systemServiceMock.getKuraMarketplaceCompatibilityVersion()).thenReturn(returnedVersion);
     }
 
-    private void thenDescriptorIsEqualTo(MarketplacePackageDescriptor expectedDescriptor) {
-        assertEquals(expectedDescriptor, this.resultingPackageDescriptor);
-
-    }
-
-    private void whenGetMarketplacePackageDescriptorIsCalledFor(String url) {
-        this.resultingPackageDescriptor = this.deploymentAgent.getMarketplacePackageDescriptor(url, false);
-
-    }
-
     private void givenAMockServerThatReturns(String nodeId, String responseXML) {
-
         String url = String.format("/node/%s/api/p", nodeId);
         MockServerClient mockServerClient = new MockServerClient(mockServer.getHost(), mockServer.getServerPort());
         mockServerClient.when(request().withPath(url)).respond(response().withBody(responseXML));
@@ -642,14 +635,28 @@ public class DeploymentAgentTest {
         System.setProperty(DPA_CONF_PATH_PROPNAME, dpaConfigurationFilepath);
     }
 
+    /*
+     * WHEN
+     */
+
     private void whenActivate() {
-
         this.deploymentAgent.activate();
-
     }
+
+    private void whenGetMarketplacePackageDescriptorIsCalledFor(String url) {
+        this.resultingPackageDescriptor = this.deploymentAgent.getMarketplacePackageDescriptor(url, false);
+    }
+
+    /*
+     * THEN
+     */
 
     private void thenNoPackageInstalled() throws Exception {
         verify(this.spiedDeploymentAgent, times(0)).installDeploymentPackageAsync(anyString());
+    }
+
+    private void thenDescriptorIsEqualTo(MarketplacePackageDescriptor expectedDescriptor) {
+        assertEquals(expectedDescriptor, this.resultingPackageDescriptor);
     }
 
 }
