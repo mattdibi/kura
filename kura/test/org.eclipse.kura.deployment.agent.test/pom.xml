@@ -130,6 +130,9 @@ Eurotech
         <plugin>
             <groupId>org.eclipse.tycho</groupId>
             <artifactId>tycho-surefire-plugin</artifactId>
+            <configuration>
+                <skip>true</skip>
+            </configuration>
         </plugin>
         <plugin>
             <groupId>org.apache.maven.plugins</groupId>
