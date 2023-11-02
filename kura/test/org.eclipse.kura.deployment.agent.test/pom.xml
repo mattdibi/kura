@@ -68,21 +68,6 @@ Eurotech
                                 <version>${testcontainers.version}</version>
                             </artifactItem>
                             <artifactItem>
-                                <groupId>org.testcontainers</groupId>
-                                <artifactId>jdbc</artifactId>
-                                <version>${testcontainers.version}</version>
-                            </artifactItem>
-                            <artifactItem>
-                                <groupId>org.testcontainers</groupId>
-                                <artifactId>postgresql</artifactId>
-                                <version>${testcontainers.version}</version>
-                            </artifactItem>
-                            <artifactItem>
-                                <groupId>org.testcontainers</groupId>
-                                <artifactId>database-commons</artifactId>
-                                <version>${testcontainers.version}</version>
-                            </artifactItem>
-                            <artifactItem>
                                 <groupId>com.github.docker-java</groupId>
                                 <artifactId>docker-java-api</artifactId>
                                 <version>${docker-java.version}</version>
