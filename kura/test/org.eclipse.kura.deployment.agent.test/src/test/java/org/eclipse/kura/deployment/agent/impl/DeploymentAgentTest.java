@@ -69,7 +69,7 @@ public class DeploymentAgentTest {
     private String dpaConfigurationFilepath;
     private DeploymentAgent spiedDeploymentAgent;
 
-    private Object resultingPackageDescriptor;
+    private MarketplacePackageDescriptor resultingPackageDescriptor;
 
     private SystemService systemServiceMock = mock(SystemService.class);
 
