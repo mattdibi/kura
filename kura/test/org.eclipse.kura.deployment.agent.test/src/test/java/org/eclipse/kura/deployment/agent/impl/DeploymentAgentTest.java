@@ -42,13 +42,10 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import javax.net.ssl.HttpsURLConnection;
-
 import org.eclipse.kura.core.testutil.TestUtil;
 import org.eclipse.kura.deployment.agent.MarketplacePackageDescriptor;
 import org.eclipse.kura.ssl.SslManagerService;
 import org.eclipse.kura.system.SystemService;
-import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockserver.client.MockServerClient;
@@ -601,12 +598,6 @@ public class DeploymentAgentTest {
                 .dpUrl("https://download.eclipse.org/kura/releases/5.3.0/org.eclipse.kura.wire.ai.component.provider-1.2.0.dp")
                 .minKuraVersion("5.1.0").maxKuraVersion("").currentKuraVersion("5.0.0").isCompatible(false).build());
 
-    }
-
-    @BeforeClass
-    public static void ensureConnection() {
-        HttpsURLConnection.setDefaultSSLSocketFactory(
-                new KeyStoreFactory(new MockServerLogger()).sslContext().getSocketFactory());
     }
 
     /*
