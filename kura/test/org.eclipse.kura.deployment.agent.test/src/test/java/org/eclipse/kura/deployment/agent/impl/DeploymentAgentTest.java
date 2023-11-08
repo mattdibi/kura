@@ -35,18 +35,25 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import javax.net.ssl.HttpsURLConnection;
+
 import org.eclipse.kura.core.testutil.TestUtil;
 import org.eclipse.kura.deployment.agent.MarketplacePackageDescriptor;
+import org.eclipse.kura.ssl.SslManagerService;
 import org.eclipse.kura.system.SystemService;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockserver.client.MockServerClient;
+import org.mockserver.logging.MockServerLogger;
+import org.mockserver.socket.tls.KeyStoreFactory;
 import org.osgi.framework.Version;
 import org.osgi.service.deploymentadmin.DeploymentAdmin;
 import org.osgi.service.deploymentadmin.DeploymentPackage;
@@ -72,6 +79,7 @@ public class DeploymentAgentTest {
     private MarketplacePackageDescriptor resultingPackageDescriptor;
 
     private SystemService systemServiceMock = mock(SystemService.class);
+    private SslManagerService sslManagerServiceMock = mock(SslManagerService.class);
 
     private static final String DPA_CONF_PATH_PROPNAME = "dpa.configuration";
 
@@ -546,7 +554,7 @@ public class DeploymentAgentTest {
                 + "</marketplace>");
 
         whenGetMarketplacePackageDescriptorIsCalledFor(
-                "http://" + mockServer.getHost() + ":" + mockServer.getServerPort().toString() + "/node/54435/api/p");
+                "https://" + mockServer.getHost() + ":" + mockServer.getServerPort().toString() + "/node/54435/api/p");
 
         thenDescriptorIsEqualTo(MarketplacePackageDescriptor.builder().nodeId("5514714")
                 .url("https://marketplace.eclipse.org/content/ai-wire-component-eclipse-kura-5")
@@ -586,13 +594,19 @@ public class DeploymentAgentTest {
                 + "</marketplace>");
 
         whenGetMarketplacePackageDescriptorIsCalledFor(
-                "http://" + mockServer.getHost() + ":" + mockServer.getServerPort().toString() + "/node/54435/api/p");
+                "https://" + mockServer.getHost() + ":" + mockServer.getServerPort().toString() + "/node/54435/api/p");
 
         thenDescriptorIsEqualTo(MarketplacePackageDescriptor.builder().nodeId("5514714")
                 .url("https://marketplace.eclipse.org/content/ai-wire-component-eclipse-kura-5")
                 .dpUrl("https://download.eclipse.org/kura/releases/5.3.0/org.eclipse.kura.wire.ai.component.provider-1.2.0.dp")
                 .minKuraVersion("5.1.0").maxKuraVersion("").currentKuraVersion("5.0.0").isCompatible(false).build());
 
+    }
+
+    @BeforeClass
+    public static void ensureConnection() {
+        HttpsURLConnection.setDefaultSSLSocketFactory(
+                new KeyStoreFactory(new MockServerLogger()).sslContext().getSocketFactory());
     }
 
     /*
@@ -628,6 +642,15 @@ public class DeploymentAgentTest {
 
         this.spiedDeploymentAgent = spy(this.deploymentAgent);
 
+        try {
+            when(sslManagerServiceMock.getSSLSocketFactory())
+                    .thenReturn(new KeyStoreFactory(new MockServerLogger()).sslContext().getSocketFactory());
+        } catch (GeneralSecurityException | IOException e) {
+            fail();
+        }
+
+        this.deploymentAgent.setSslManagerService(sslManagerServiceMock);
+
     }
 
     private void givenConfigurationFile(String dpaConfigurationFilepath) throws NoSuchFieldException {
@@ -644,7 +667,7 @@ public class DeploymentAgentTest {
     }
 
     private void whenGetMarketplacePackageDescriptorIsCalledFor(String url) {
-        this.resultingPackageDescriptor = this.deploymentAgent.getMarketplacePackageDescriptor(url, false);
+        this.resultingPackageDescriptor = this.deploymentAgent.getMarketplacePackageDescriptor(url);
     }
 
     /*
