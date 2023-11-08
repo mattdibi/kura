@@ -69,7 +69,7 @@ public class DeploymentAgentTest {
 
     private static final String VERSION_1_0_0 = "1.0.0";
     private static final String DP_NAME = "dpName";
-    private DeploymentAgent deploymentAgent;
+    private DeploymentAgent deploymentAgent = new DeploymentAgent();
     private String dpaConfigurationFilepath;
     private DeploymentAgent spiedDeploymentAgent;
 
@@ -517,12 +517,12 @@ public class DeploymentAgentTest {
         whenActivate();
 
         thenNoPackageInstalled();
-
     }
 
     @Test
     public void getMarketplacePackageDescriptorShouldWorkWithCompatible() {
         givenDeploymentAgent();
+        givenDeploymentAgentUsingSSLContectDefinedByMockServer();
         givenSystemServiceReturnsCurrentKuraVersion("5.4.0");
         givenAMockServerThatReturns("54435", "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + "<marketplace>\n"
                 + "  <node id=\"5514714\" name=\"AI Wire Component for Eclipse Kura 5\" url=\"https://marketplace.eclipse.org/content/ai-wire-component-eclipse-kura-5\">\n"
@@ -557,12 +557,12 @@ public class DeploymentAgentTest {
                 .url("https://marketplace.eclipse.org/content/ai-wire-component-eclipse-kura-5")
                 .dpUrl("https://download.eclipse.org/kura/releases/5.3.0/org.eclipse.kura.wire.ai.component.provider-1.2.0.dp")
                 .minKuraVersion("5.1.0").maxKuraVersion("").currentKuraVersion("5.4.0").isCompatible(true).build());
-
     }
 
     @Test
     public void getMarketplacePackageDescriptorShouldWorkWithNotCompatible() {
         givenDeploymentAgent();
+        givenDeploymentAgentUsingSSLContectDefinedByMockServer();
         givenSystemServiceReturnsCurrentKuraVersion("5.0.0");
         givenAMockServerThatReturns("54435", "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + "<marketplace>\n"
                 + "  <node id=\"5514714\" name=\"AI Wire Component for Eclipse Kura 5\" url=\"https://marketplace.eclipse.org/content/ai-wire-component-eclipse-kura-5\">\n"
@@ -597,7 +597,6 @@ public class DeploymentAgentTest {
                 .url("https://marketplace.eclipse.org/content/ai-wire-component-eclipse-kura-5")
                 .dpUrl("https://download.eclipse.org/kura/releases/5.3.0/org.eclipse.kura.wire.ai.component.provider-1.2.0.dp")
                 .minKuraVersion("5.1.0").maxKuraVersion("").currentKuraVersion("5.0.0").isCompatible(false).build());
-
     }
 
     /*
@@ -621,18 +620,14 @@ public class DeploymentAgentTest {
     }
 
     private void givenDeploymentAgent() {
-        this.deploymentAgent = new DeploymentAgent();
-
         Properties properties = new Properties();
-
         properties.put("kura.packages", "fake-packages-path");
-
         when(systemServiceMock.getProperties()).thenReturn(properties);
-
         this.deploymentAgent.setSystemService(systemServiceMock);
-
         this.spiedDeploymentAgent = spy(this.deploymentAgent);
+    }
 
+    private void givenDeploymentAgentUsingSSLContectDefinedByMockServer() {
         try {
             when(sslManagerServiceMock.getSSLSocketFactory())
                     .thenReturn(new KeyStoreFactory(new MockServerLogger()).sslContext().getSocketFactory());
