@@ -283,10 +283,12 @@ public class ContainerOrchestrationServiceImpl implements ConfigurableComponent,
             throw new IllegalArgumentException(PARAMETER_CANNOT_BE_NULL);
         }
 
+        logger.info("Retrieving image id for \"{}:{}\"", imageName, imageTag);
+
         try {
-            return Optional.of(this.dockerClient.inspectImageCmd(imageName + ":" + imageTag).getImageId());
+            return Optional.of(this.dockerClient.inspectImageCmd(imageName + ":" + imageTag).exec().getId());
         } catch (NotFoundException e) {
-            logger.debug("Image {}:{} not found on disk.", imageName, imageTag);
+            logger.info("Image {}:{} not found on disk.", imageName, imageTag);
         }
 
         // What do we do here?
@@ -304,8 +306,10 @@ public class ContainerOrchestrationServiceImpl implements ConfigurableComponent,
             throw new IllegalArgumentException(PARAMETER_CANNOT_BE_NULL);
         }
 
+        logger.info("Retrieving image id for \"{}:{}\"", imageName, imageTag);
+
         try {
-            return Optional.of(this.dockerClient.inspectImageCmd(imageName + ":" + imageTag).getImageId());
+            return Optional.of(this.dockerClient.inspectImageCmd(imageName + ":" + imageTag).exec().getId());
         } catch (NotFoundException e) {
             logger.debug("Image {}:{} not found on disk.", imageName, imageTag);
         }

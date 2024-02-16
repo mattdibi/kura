@@ -121,8 +121,8 @@ public class ContainerInstance implements ConfigurableComponent, ContainerOrches
 
         // Get image digest to perform the signature verification and later populate the digest entry in the
         // snapshot
-        // this.containerOrchestrationService.getImageDigestBy(newProps.getContainerImage(),
-        // newProps.getContainerImageTag());
+        Optional<String> imageId = this.containerOrchestrationService
+                .getImageIdByName(configuration.getContainerImage(), configuration.getContainerImageTag());
 
         String trustAnchor = configuration.getSignatureTrustAnchor().get();
         boolean verifyInTransparencyLog = configuration.getSignatureVerifyTransparencyLog();
