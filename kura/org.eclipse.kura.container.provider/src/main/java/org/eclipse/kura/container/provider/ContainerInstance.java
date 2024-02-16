@@ -16,8 +16,11 @@ package org.eclipse.kura.container.provider;
 import static java.util.Objects.isNull;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -30,6 +33,7 @@ import org.eclipse.kura.container.orchestration.ContainerConfiguration;
 import org.eclipse.kura.container.orchestration.ContainerInstanceDescriptor;
 import org.eclipse.kura.container.orchestration.ContainerOrchestrationService;
 import org.eclipse.kura.container.orchestration.listener.ContainerOrchestrationServiceListener;
+import org.eclipse.kura.container.signature.ContainerSignatureValidationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,11 +44,26 @@ public class ContainerInstance implements ConfigurableComponent, ContainerOrches
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
     private ContainerOrchestrationService containerOrchestrationService;
+    private Set<ContainerSignatureValidationService> availableContainerSignatureValidationService = new HashSet<>();
 
     private State state = new Disabled(new ContainerInstanceOptions(Collections.emptyMap()));
 
     public void setContainerOrchestrationService(final ContainerOrchestrationService containerOrchestrationService) {
         this.containerOrchestrationService = containerOrchestrationService;
+    }
+
+    public synchronized void setContainerSignatureValidationService(
+            final ContainerSignatureValidationService containerSignatureValidationService) {
+
+        logger.info("Container signature validation service {} added.", containerSignatureValidationService.getClass());
+        this.availableContainerSignatureValidationService.add(containerSignatureValidationService);
+    }
+
+    public synchronized void unsetContainerSignatureValidationService(
+            final ContainerSignatureValidationService containerSignatureValidationService) {
+        logger.info("Container signature validation service {} removed.",
+                containerSignatureValidationService.getClass());
+        this.availableContainerSignatureValidationService.remove(containerSignatureValidationService);
     }
 
     // ----------------------------------------------------------------
@@ -69,6 +88,8 @@ public class ContainerInstance implements ConfigurableComponent, ContainerOrches
         try {
             ContainerInstanceOptions newProps = new ContainerInstanceOptions(properties);
 
+            boolean containerSignatureValidated = validateContainerImageSignature(newProps);
+
             if (newProps.isEnabled()) {
                 this.containerOrchestrationService.registerListener(this);
             } else {
@@ -77,11 +98,43 @@ public class ContainerInstance implements ConfigurableComponent, ContainerOrches
 
             updateState(s -> s.onConfigurationUpdated(newProps));
         } catch (Exception e) {
-            logger.error("Failed to create container instance. Please check configuration of container: {}.",
-                    properties.get(ConfigurationService.KURA_SERVICE_PID));
+            logger.error("Failed to create container instance. Please check configuration of container: {}. Caused by:",
+                    properties.get(ConfigurationService.KURA_SERVICE_PID), e);
             updateState(State::onDisabled);
         }
 
+    }
+
+    private boolean validateContainerImageSignature(ContainerInstanceOptions configuration) throws KuraException {
+
+        if (Objects.isNull(this.availableContainerSignatureValidationService)
+                || this.availableContainerSignatureValidationService.isEmpty()) {
+            logger.warn("No container signature validation service available. Skipping signature validation.");
+            return false;
+        }
+
+        if (!configuration.getSignatureTrustAnchor().isPresent()
+                || configuration.getSignatureTrustAnchor().get().isEmpty()) {
+            logger.warn("No signature trust anchor available. Skipping signature validation.");
+            return false;
+        }
+
+        // Get image digest to perform the signature verification and later populate the digest entry in the
+        // snapshot
+        // this.containerOrchestrationService.getImageDigestBy(newProps.getContainerImage(),
+        // newProps.getContainerImageTag());
+
+        String trustAnchor = configuration.getSignatureTrustAnchor().get();
+        boolean verifyInTransparencyLog = configuration.getSignatureVerifyTransparencyLog();
+
+        for (ContainerSignatureValidationService validationService : this.availableContainerSignatureValidationService) {
+            if (validationService.verify(configuration.getContainerImage(), configuration.getContainerImageTag(),
+                    trustAnchor, verifyInTransparencyLog)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public void deactivate() {
