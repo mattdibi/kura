@@ -283,16 +283,26 @@ public class ContainerOrchestrationServiceImpl implements ConfigurableComponent,
             throw new IllegalArgumentException(PARAMETER_CANNOT_BE_NULL);
         }
 
-        logger.info("Retrieving image id for \"{}:{}\"", imageName, imageTag);
+        String imageReference = String.format("%s:%s", imageName, imageTag);
+        logger.info("Retrieving image id for \"{}\"", imageReference);
 
         try {
-            return Optional.of(this.dockerClient.inspectImageCmd(imageName + ":" + imageTag).exec().getId());
+            return Optional.of(this.dockerClient.inspectImageCmd(imageReference).exec().getId());
         } catch (NotFoundException e) {
-            logger.info("Image {}:{} not found on disk.", imageName, imageTag);
+            logger.info("Image {} not found on disk.", imageReference);
         }
 
-        // What do we do here?
-        // ...? TODO
+        // Extract the Registry URL from the imageReference
+        // TODO
+
+        // Retrieve the auth token from the remote registry with the PULL scope
+        // TODO
+
+        // Retrieve the image manifest
+        // TODO
+
+        // Parse the manifest and extract the image digest for the current architecture
+        // TODO
 
         return Optional.empty();
     }
@@ -314,8 +324,17 @@ public class ContainerOrchestrationServiceImpl implements ConfigurableComponent,
             logger.debug("Image {}:{} not found on disk.", imageName, imageTag);
         }
 
-        // What do we do here?
-        // ...? TODO
+        // Extract the Registry URL from the imageReference
+        // TODO
+
+        // Retrieve the auth token from the remote registry with the PULL scope
+        // TODO
+
+        // Retrieve the image manifest
+        // TODO
+
+        // Parse the manifest and extract the image digest for the current architecture
+        // TODO
 
         return Optional.empty();
     }
