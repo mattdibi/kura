@@ -298,7 +298,7 @@ public class ContainerInstanceTest {
         thenNoExceptionOccurred();
         thenWaitForContainerInstanceToBecome(ContainerInstanceState.CREATED);
         thenStartContainerWasCalledWith(this.properties);
-        thenVerifyWasNeverCalled();
+        thenVerifySignatureWasNeverCalled();
     }
 
     @Test
@@ -322,7 +322,7 @@ public class ContainerInstanceTest {
         thenNoExceptionOccurred();
         thenWaitForContainerInstanceToBecome(ContainerInstanceState.CREATED);
         thenStartContainerWasCalledWith(this.properties);
-        thenVerifyWasCalledFor("nginx", "latest", "aRealTrustAnchor ;)", true);
+        thenVerifySignatureWasCalledFor("nginx", "latest", "aRealTrustAnchor ;)", true);
     }
 
     @Test
@@ -346,7 +346,7 @@ public class ContainerInstanceTest {
         thenNoExceptionOccurred();
         thenWaitForContainerInstanceToBecome(ContainerInstanceState.CREATED);
         thenStartContainerWasCalledWith(this.properties);
-        thenVerifyWasCalledFor("nginx", "latest", "aRealTrustAnchor ;)", true);
+        thenVerifySignatureWasCalledFor("nginx", "latest", "aRealTrustAnchor ;)", true);
     }
 
     @Test
@@ -372,7 +372,7 @@ public class ContainerInstanceTest {
         thenNoExceptionOccurred();
         thenWaitForContainerInstanceToBecome(ContainerInstanceState.CREATED);
         thenStartContainerWasCalledWith(this.properties);
-        thenAuthenticatedVerifyWasCalledFor("nginx", "latest", "aRealTrustAnchor ;)", true,
+        thenAuthenticatedVerifySignatureWasCalledFor("nginx", "latest", "aRealTrustAnchor ;)", true,
                 new PasswordRegistryCredentials(Optional.empty(), "username", new Password("password")));
     }
 
@@ -532,20 +532,20 @@ public class ContainerInstanceTest {
         verify(this.mockContainerOrchestrationService, times(1)).deleteContainer(containerId);
     }
 
-    private void thenVerifyWasNeverCalled() throws KuraException {
+    private void thenVerifySignatureWasNeverCalled() throws KuraException {
         verify(this.mockContainerSignatureValidationService, never()).verify(any(String.class), any(String.class),
                 any(String.class), any(Boolean.class));
         verify(this.mockContainerSignatureValidationService, never()).verify(any(String.class), any(String.class),
                 any(String.class), any(Boolean.class), any(RegistryCredentials.class));
     }
 
-    private void thenVerifyWasCalledFor(String imageName, String imageTag, String trustAnchor, boolean verifyTlog)
-            throws KuraException {
+    private void thenVerifySignatureWasCalledFor(String imageName, String imageTag, String trustAnchor,
+            boolean verifyTlog) throws KuraException {
         verify(this.mockContainerSignatureValidationService, times(1)).verify(imageName, imageTag, trustAnchor,
                 verifyTlog);
     }
 
-    private void thenAuthenticatedVerifyWasCalledFor(String imageName, String imageTag, String trustAnchor,
+    private void thenAuthenticatedVerifySignatureWasCalledFor(String imageName, String imageTag, String trustAnchor,
             boolean verifyTlog, PasswordRegistryCredentials passwordRegistryCredentials) throws KuraException {
         verify(this.mockContainerSignatureValidationService, times(1)).verify(imageName, imageTag, trustAnchor,
                 verifyTlog, passwordRegistryCredentials);
