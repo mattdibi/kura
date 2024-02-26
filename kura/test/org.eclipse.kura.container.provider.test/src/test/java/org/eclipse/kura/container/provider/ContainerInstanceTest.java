@@ -278,6 +278,29 @@ public class ContainerInstanceTest {
     }
 
     @Test
+    public void signatureValidationDoesntGetCalledWithMissingTrustAnchor() throws KuraException, InterruptedException {
+        givenContainerOrchestratorWithNoRunningContainers();
+        givenContainerOrchestratorReturningOnStart("1234");
+        givenContainerInstanceWith(this.mockContainerOrchestrationService);
+
+        givenContainerSignatureValidationServiceReturningFailureFor("nginx", "latest");
+        givenContainerInstanceWith(this.mockContainerSignatureValidationService);
+
+        givenPropertiesWith(CONTAINER_ENABLED, true);
+        givenPropertiesWith(CONTAINER_NAME, "pippo");
+        givenPropertiesWith(CONTAINER_IMAGE, "nginx");
+        givenPropertiesWith(CONTAINER_IMAGE_TAG, "latest");
+        givenPropertiesWith(CONTAINER_VERIFY_TLOG, true);
+
+        whenActivateInstanceIsCalledWith(this.properties);
+
+        thenNoExceptionOccurred();
+        thenWaitForContainerInstanceToBecome(ContainerInstanceState.CREATED);
+        thenStartContainerWasCalledWith(this.properties);
+        thenVerifyWasNeverCalled();
+    }
+
+    @Test
     public void signatureValidationWorks() throws KuraException, InterruptedException {
         givenContainerOrchestratorWithNoRunningContainers();
         givenContainerOrchestratorReturningOnStart("1234");
@@ -479,16 +502,23 @@ public class ContainerInstanceTest {
         verify(this.mockContainerOrchestrationService, times(1)).deleteContainer(containerId);
     }
 
-    private void thenAuthenticatedVerifyWasCalledFor(String imageName, String imageTag, String trustAnchor,
-            boolean verifyTlog, PasswordRegistryCredentials passwordRegistryCredentials) throws KuraException {
-        verify(this.mockContainerSignatureValidationService, times(1)).verify(imageName, imageTag, trustAnchor,
-                verifyTlog, passwordRegistryCredentials);
+    private void thenVerifyWasNeverCalled() throws KuraException {
+        verify(this.mockContainerSignatureValidationService, never()).verify(any(String.class), any(String.class),
+                any(String.class), any(Boolean.class));
+        verify(this.mockContainerSignatureValidationService, never()).verify(any(String.class), any(String.class),
+                any(String.class), any(Boolean.class), any(RegistryCredentials.class));
     }
 
     private void thenVerifyWasCalledFor(String imageName, String imageTag, String trustAnchor, boolean verifyTlog)
             throws KuraException {
         verify(this.mockContainerSignatureValidationService, times(1)).verify(imageName, imageTag, trustAnchor,
                 verifyTlog);
+    }
+
+    private void thenAuthenticatedVerifyWasCalledFor(String imageName, String imageTag, String trustAnchor,
+            boolean verifyTlog, PasswordRegistryCredentials passwordRegistryCredentials) throws KuraException {
+        verify(this.mockContainerSignatureValidationService, times(1)).verify(imageName, imageTag, trustAnchor,
+                verifyTlog, passwordRegistryCredentials);
     }
 
     private void thenNoExceptionOccurred() {
