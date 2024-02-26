@@ -307,7 +307,7 @@ public class ContainerInstanceTest {
         givenContainerOrchestratorReturningOnStart("1234");
         givenContainerInstanceWith(this.mockContainerOrchestrationService);
 
-        givenContainerSignatureValidationServiceReturningFailureFor("nginx", "latest");
+        givenContainerSignatureValidationServiceReturningSuccessFor("nginx", "latest");
         givenContainerInstanceWith(this.mockContainerSignatureValidationService);
 
         givenPropertiesWith(CONTAINER_ENABLED, true);
@@ -445,6 +445,14 @@ public class ContainerInstanceTest {
             throws KuraException {
         when(this.mockContainerSignatureValidationService.verify(eq(imageName), eq(imageTag), any(String.class),
                 any(Boolean.class))).thenReturn(FAILED_VALIDATION);
+    }
+
+    private void givenContainerSignatureValidationServiceReturningSuccessFor(String imageName, String imageTag)
+            throws KuraException {
+        // Generate random sha256 string
+        String sha256 = "sha256:" + Long.toHexString(Double.doubleToLongBits(Math.random()));
+        when(this.mockContainerSignatureValidationService.verify(eq(imageName), eq(imageTag), any(String.class),
+                any(Boolean.class))).thenReturn(new ValidationResult(true, sha256));
     }
 
     private void givenContainerSignatureValidationServiceReturningFailureForAuthenticated(String imageName,
