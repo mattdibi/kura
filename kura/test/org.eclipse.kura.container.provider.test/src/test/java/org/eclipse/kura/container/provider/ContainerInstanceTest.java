@@ -34,6 +34,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
+import org.eclipse.kura.KuraErrorCode;
 import org.eclipse.kura.KuraException;
 import org.eclipse.kura.configuration.Password;
 import org.eclipse.kura.container.orchestration.ContainerConfiguration;
@@ -325,6 +326,30 @@ public class ContainerInstanceTest {
     }
 
     @Test
+    public void signatureValidationWorksWithThrowingValidationService() throws KuraException, InterruptedException {
+        givenContainerOrchestratorWithNoRunningContainers();
+        givenContainerOrchestratorReturningOnStart("1234");
+        givenContainerInstanceWith(this.mockContainerOrchestrationService);
+
+        givenContainerSignatureValidationServiceThrows();
+        givenContainerInstanceWith(this.mockContainerSignatureValidationService);
+
+        givenPropertiesWith(CONTAINER_ENABLED, true);
+        givenPropertiesWith(CONTAINER_NAME, "pippo");
+        givenPropertiesWith(CONTAINER_IMAGE, "nginx");
+        givenPropertiesWith(CONTAINER_IMAGE_TAG, "latest");
+        givenPropertiesWith(CONTAINER_TRUST_ANCHOR, "aRealTrustAnchor ;)");
+        givenPropertiesWith(CONTAINER_VERIFY_TLOG, true);
+
+        whenActivateInstanceIsCalledWith(this.properties);
+
+        thenNoExceptionOccurred();
+        thenWaitForContainerInstanceToBecome(ContainerInstanceState.CREATED);
+        thenStartContainerWasCalledWith(this.properties);
+        thenVerifyWasCalledFor("nginx", "latest", "aRealTrustAnchor ;)", true);
+    }
+
+    @Test
     public void signatureValidationWorksWithAuthentication() throws KuraException, InterruptedException {
         givenContainerOrchestratorWithNoRunningContainers();
         givenContainerOrchestratorReturningOnStart("1234");
@@ -426,6 +451,11 @@ public class ContainerInstanceTest {
             String imageTag) throws KuraException {
         when(this.mockContainerSignatureValidationService.verify(eq(imageName), eq(imageTag), any(String.class),
                 any(Boolean.class), any(RegistryCredentials.class))).thenReturn(FAILED_VALIDATION);
+    }
+
+    private void givenContainerSignatureValidationServiceThrows() throws KuraException {
+        when(this.mockContainerSignatureValidationService.verify(any(String.class), any(String.class),
+                any(String.class), any(Boolean.class))).thenThrow(new KuraException(KuraErrorCode.SECURITY_EXCEPTION));
     }
 
     private void givenContainerInstanceWith(ContainerSignatureValidationService signatureValidationService) {
