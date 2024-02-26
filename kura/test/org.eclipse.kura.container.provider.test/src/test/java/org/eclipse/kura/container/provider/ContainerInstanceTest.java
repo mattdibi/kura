@@ -328,34 +328,6 @@ public class ContainerInstanceTest {
                 new PasswordRegistryCredentials(Optional.empty(), "username", new Password("password")));
     }
 
-    private void thenAuthenticatedVerifyWasCalledFor(String imageName, String imageTag, String trustAnchor,
-            boolean verifyTlog, PasswordRegistryCredentials passwordRegistryCredentials) throws KuraException {
-        verify(this.mockContainerSignatureValidationService, times(1)).verify(imageName, imageTag, trustAnchor,
-                verifyTlog, passwordRegistryCredentials);
-    }
-
-    private void thenVerifyWasCalledFor(String imageName, String imageTag, String trustAnchor, boolean verifyTlog)
-            throws KuraException {
-        verify(this.mockContainerSignatureValidationService, times(1)).verify(imageName, imageTag, trustAnchor,
-                verifyTlog);
-    }
-
-    private void givenContainerSignatureValidationServiceReturningFailureFor(String imageName, String imageTag)
-            throws KuraException {
-        when(this.mockContainerSignatureValidationService.verify(eq(imageName), eq(imageTag), any(String.class),
-                any(Boolean.class))).thenReturn(FAILED_VALIDATION);
-    }
-
-    private void givenContainerSignatureValidationServiceReturningFailureForAuthenticated(String imageName,
-            String imageTag) throws KuraException {
-        when(this.mockContainerSignatureValidationService.verify(eq(imageName), eq(imageTag), any(String.class),
-                any(Boolean.class), any(RegistryCredentials.class))).thenReturn(FAILED_VALIDATION);
-    }
-
-    private void givenContainerInstanceWith(ContainerSignatureValidationService signatureValidationService) {
-        this.containerInstance.setContainerSignatureValidationService(signatureValidationService);
-    }
-
     @After
     public void tearDown() {
         this.containerInstance.deactivate();
@@ -419,6 +391,22 @@ public class ContainerInstanceTest {
             throws KuraException, InterruptedException {
         when(this.mockContainerOrchestrationService.startContainer(any(ContainerConfiguration.class)))
                 .thenReturn(containerId);
+    }
+
+    private void givenContainerSignatureValidationServiceReturningFailureFor(String imageName, String imageTag)
+            throws KuraException {
+        when(this.mockContainerSignatureValidationService.verify(eq(imageName), eq(imageTag), any(String.class),
+                any(Boolean.class))).thenReturn(FAILED_VALIDATION);
+    }
+
+    private void givenContainerSignatureValidationServiceReturningFailureForAuthenticated(String imageName,
+            String imageTag) throws KuraException {
+        when(this.mockContainerSignatureValidationService.verify(eq(imageName), eq(imageTag), any(String.class),
+                any(Boolean.class), any(RegistryCredentials.class))).thenReturn(FAILED_VALIDATION);
+    }
+
+    private void givenContainerInstanceWith(ContainerSignatureValidationService signatureValidationService) {
+        this.containerInstance.setContainerSignatureValidationService(signatureValidationService);
     }
 
     /*
@@ -489,6 +477,18 @@ public class ContainerInstanceTest {
 
     private void thenDeleteContainerWasCalledFor(String containerId) throws KuraException {
         verify(this.mockContainerOrchestrationService, times(1)).deleteContainer(containerId);
+    }
+
+    private void thenAuthenticatedVerifyWasCalledFor(String imageName, String imageTag, String trustAnchor,
+            boolean verifyTlog, PasswordRegistryCredentials passwordRegistryCredentials) throws KuraException {
+        verify(this.mockContainerSignatureValidationService, times(1)).verify(imageName, imageTag, trustAnchor,
+                verifyTlog, passwordRegistryCredentials);
+    }
+
+    private void thenVerifyWasCalledFor(String imageName, String imageTag, String trustAnchor, boolean verifyTlog)
+            throws KuraException {
+        verify(this.mockContainerSignatureValidationService, times(1)).verify(imageName, imageTag, trustAnchor,
+                verifyTlog);
     }
 
     private void thenNoExceptionOccurred() {
