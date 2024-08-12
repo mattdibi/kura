@@ -56,7 +56,7 @@ public interface AddressResolver extends DBusInterface {
             return this.name;
         }
 
-        public UInt32 getAddrFlags() {
+        public UInt32 getSignalFlags() {
             return this.flags;
         }
 

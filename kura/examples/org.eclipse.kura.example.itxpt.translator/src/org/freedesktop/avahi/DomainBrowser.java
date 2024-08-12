@@ -44,7 +44,7 @@ public interface DomainBrowser extends DBusInterface {
             return this.domain;
         }
 
-        public UInt32 getItemFlags() {
+        public UInt32 getSignalFlags() {
             return this.flags;
         }
 
@@ -78,7 +78,7 @@ public interface DomainBrowser extends DBusInterface {
             return this.domain;
         }
 
-        public UInt32 getItemFlags() {
+        public UInt32 getSignalFlags() {
             return this.flags;
         }
 
