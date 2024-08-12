@@ -260,6 +260,7 @@
                             <failsOnError>true</failsOnError>
                             <linkXRef>false</linkXRef>
                             <configLocation>${kura.basedir}/../checkstyle_checks.xml</configLocation>
+                            <suppressionsLocation>../../suppressions.xml</suppressionsLocation>
                         </configuration>
                         <goals>
                             <goal>check</goal>
