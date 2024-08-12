@@ -12,23 +12,23 @@ import org.freedesktop.dbus.types.UInt32;
 @DBusInterfaceName("org.freedesktop.Avahi.ServiceBrowser")
 public interface ServiceBrowser extends DBusInterface {
 
-
     public void Free();
-    public void Start();
 
+    public void Start();
 
     public static class ItemNew extends DBusSignal {
 
-        private final int interfaceparam;
+        private final int iface;
         private final int protocol;
         private final String name;
         private final String type;
         private final String domain;
         private final UInt32 flags;
 
-        public ItemNew(String _path, int _interface, int _protocol, String _name, String _type, String _domain, UInt32 _flags) throws DBusException {
+        public ItemNew(String _path, int _interface, int _protocol, String _name, String _type, String _domain,
+                UInt32 _flags) throws DBusException {
             super(_path, _interface, _protocol, _name, _type, _domain, _flags);
-            this.interface = _interface;
+            this.iface = _interface;
             this.protocol = _protocol;
             this.name = _name;
             this.type = _type;
@@ -36,46 +36,45 @@ public interface ServiceBrowser extends DBusInterface {
             this.flags = _flags;
         }
 
-
-        public int getInterfaceparam() {
-            return interfaceparam;
+        public int getIface() {
+            return this.iface;
         }
 
         public int getProtocol() {
-            return protocol;
+            return this.protocol;
         }
 
-        public String getName() {
-            return name;
+        public String getItemName() {
+            return this.name;
         }
 
-        public String getType() {
-            return type;
+        public String getItemType() {
+            return this.type;
         }
 
         public String getDomain() {
-            return domain;
+            return this.domain;
         }
 
-        public UInt32 getFlags() {
-            return flags;
+        public UInt32 getSignalFlags() {
+            return this.flags;
         }
-
 
     }
 
     public static class ItemRemove extends DBusSignal {
 
-        private final int interfaceparam;
+        private final int iface;
         private final int protocol;
         private final String name;
         private final String type;
         private final String domain;
         private final UInt32 flags;
 
-        public ItemRemove(String _path, int _interface, int _protocol, String _name, String _type, String _domain, UInt32 _flags) throws DBusException {
+        public ItemRemove(String _path, int _interface, int _protocol, String _name, String _type, String _domain,
+                UInt32 _flags) throws DBusException {
             super(_path, _interface, _protocol, _name, _type, _domain, _flags);
-            this.interface = _interface;
+            this.iface = _interface;
             this.protocol = _protocol;
             this.name = _name;
             this.type = _type;
@@ -83,31 +82,29 @@ public interface ServiceBrowser extends DBusInterface {
             this.flags = _flags;
         }
 
-
-        public int getInterfaceparam() {
-            return interfaceparam;
+        public int getIface() {
+            return this.iface;
         }
 
         public int getProtocol() {
-            return protocol;
+            return this.protocol;
         }
 
-        public String getName() {
-            return name;
+        public String getItemName() {
+            return this.name;
         }
 
-        public String getType() {
-            return type;
+        public String getItemType() {
+            return this.type;
         }
 
         public String getDomain() {
-            return domain;
+            return this.domain;
         }
 
-        public UInt32 getFlags() {
-            return flags;
+        public UInt32 getSignalFlags() {
+            return this.flags;
         }
-
 
     }
 
@@ -120,11 +117,9 @@ public interface ServiceBrowser extends DBusInterface {
             this.error = _error;
         }
 
-
         public String getError() {
             return error;
         }
-
 
     }
 }
