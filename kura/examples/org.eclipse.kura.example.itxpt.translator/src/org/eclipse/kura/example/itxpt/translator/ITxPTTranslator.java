@@ -1,6 +1,7 @@
 package org.eclipse.kura.example.itxpt.translator;
 
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,8 +23,8 @@ public class ITxPTTranslator {
 
     private static final String APP_ID = "org.eclipse.kura.example.itxpt.translator";
 
-    private static final int AVAHI_IF_UNSPEC = -1;
-    private static final int AVAHI_PROTO_UNSPEC = -1;
+    private static final int AVAHI_IF_UNSPEC = -1; // Unspecified interface, publish on all interfaces
+    private static final int AVAHI_PROTO_UNSPEC = -1; // Unspecified protocol, publish on all protocols
 
     private EntryGroup entryGroup = null;
     private DBusConnection dbusConn = null;
@@ -48,35 +49,29 @@ public class ITxPTTranslator {
             this.entryGroup = this.dbusConn.getRemoteObject("org.freedesktop.Avahi", entryGroupPath.getPath(),
                     EntryGroup.class);
 
-            List<String> list = new ArrayList<>();
-            list.add("txtvers=1");
-            list.add("version=2.1.1");
-            list.add("system_type=Gateway");
-            list.add("system_model=Raspberry");
-            list.add("manufacturer=Eurotech");
-            list.add("serial_number=AAAABBB0000");
-            list.add("software_version=2.7.0");
-            list.add("hardware_version=2.7.0");
-            list.add("mac_address=dc:a6:32:e0:54:f0");
-            list.add("status=0");
-            list.add("xml_path=./");
-            list.add("services=inventory");
-
-            List<List<Byte>> txt = new ArrayList<>();
-            Charset charset = Charset.forName("ASCII");
-            for (String element : list) {
-                txt.add(convertToListOfBytes(element.getBytes(charset)));
-            }
+            List<String> txt = new ArrayList<>();
+            txt.add("txtvers=1");
+            txt.add("version=2.1.1");
+            txt.add("system_type=Gateway");
+            txt.add("system_model=Raspberry");
+            txt.add("manufacturer=Eurotech");
+            txt.add("serial_number=AAAABBB0000");
+            txt.add("software_version=2.7.0");
+            txt.add("hardware_version=2.7.0");
+            txt.add("mac_address=dc:a6:32:e0:54:f0");
+            txt.add("status=0");
+            txt.add("xml_path=./");
+            txt.add("services=inventory");
 
             this.entryGroup.AddService(AVAHI_IF_UNSPEC,         // interface
                     AVAHI_PROTO_UNSPEC,                         // protocol
                     new UInt32(0),                              // flags
                     "RaspberryPi-dc:a6:32:e0:54:f0_inventory",  // name
-                    "_itxpt_http._tcp",  // type
-                    "",                  // domain
-                    "",                  // host
-                    new UInt16(80),      // port
-                    txt                  // txt
+                    "_itxpt_http._tcp",   // type
+                    "",                   // domain
+                    "",                   // host
+                    new UInt16(80),       // port
+                    convertToTxtList(txt) // txt
             );
             this.entryGroup.Commit();
 
@@ -88,10 +83,20 @@ public class ITxPTTranslator {
 
     }
 
+    private List<List<Byte>> convertToTxtList(List<String> stringArray) {
+        List<List<Byte>> output = new ArrayList<>();
+        Charset charset = StandardCharsets.US_ASCII;
+        for (String element : stringArray) {
+            output.add(convertToListOfBytes(element.getBytes(charset)));
+        }
+
+        return output;
+    }
+
     private List<Byte> convertToListOfBytes(byte[] bytes) {
         List<Byte> output = new ArrayList<>();
-        for (byte el : bytes) {
-            output.add(el);
+        for (byte elem : bytes) {
+            output.add(elem);
         }
 
         return output;
@@ -107,7 +112,6 @@ public class ITxPTTranslator {
         }
 
         s_logger.info("Unregistered all DNS services");
-
     }
 
 }
