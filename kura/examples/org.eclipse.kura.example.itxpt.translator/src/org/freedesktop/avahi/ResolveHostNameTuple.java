@@ -2,11 +2,13 @@ package org.freedesktop.avahi;
 
 import org.freedesktop.dbus.Tuple;
 import org.freedesktop.dbus.annotations.Position;
+import org.freedesktop.dbus.types.UInt32;
 
 /**
  * Auto-generated class.
  */
 public class ResolveHostNameTuple extends Tuple {
+
     @Position(0)
     private int interfaceparam;
     @Position(1)
@@ -20,7 +22,8 @@ public class ResolveHostNameTuple extends Tuple {
     @Position(5)
     private UInt32 flags;
 
-    public ResolveHostNameTuple(int interfaceparam, int protocol, String name, int aprotocol, String address, UInt32 flags) {
+    public ResolveHostNameTuple(int interfaceparam, int protocol, String name, int aprotocol, String address,
+            UInt32 flags) {
         this.interfaceparam = interfaceparam;
         this.protocol = protocol;
         this.name = name;
@@ -36,6 +39,7 @@ public class ResolveHostNameTuple extends Tuple {
     public int getInterfaceparam() {
         return interfaceparam;
     }
+
     public void setProtocol(int arg) {
         protocol = arg;
     }
@@ -43,6 +47,7 @@ public class ResolveHostNameTuple extends Tuple {
     public int getProtocol() {
         return protocol;
     }
+
     public void setName(String arg) {
         name = arg;
     }
@@ -50,6 +55,7 @@ public class ResolveHostNameTuple extends Tuple {
     public String getName() {
         return name;
     }
+
     public void setAprotocol(int arg) {
         aprotocol = arg;
     }
@@ -57,6 +63,7 @@ public class ResolveHostNameTuple extends Tuple {
     public int getAprotocol() {
         return aprotocol;
     }
+
     public void setAddress(String arg) {
         address = arg;
     }
@@ -64,6 +71,7 @@ public class ResolveHostNameTuple extends Tuple {
     public String getAddress() {
         return address;
     }
+
     public void setFlags(UInt32 arg) {
         flags = arg;
     }
@@ -71,6 +79,5 @@ public class ResolveHostNameTuple extends Tuple {
     public UInt32 getFlags() {
         return flags;
     }
-
 
 }

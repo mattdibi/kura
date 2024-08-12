@@ -1,12 +1,17 @@
 package org.freedesktop.avahi;
 
+import java.util.List;
+
 import org.freedesktop.dbus.Tuple;
 import org.freedesktop.dbus.annotations.Position;
+import org.freedesktop.dbus.types.UInt16;
+import org.freedesktop.dbus.types.UInt32;
 
 /**
  * Auto-generated class.
  */
 public class ResolveServiceTuple extends Tuple {
+
     @Position(0)
     private int interfaceparam;
     @Position(1)
@@ -30,7 +35,8 @@ public class ResolveServiceTuple extends Tuple {
     @Position(10)
     private UInt32 flags;
 
-    public ResolveServiceTuple(int interfaceparam, int protocol, String name, String type, String domain, String host, int aprotocol, String address, UInt16 port, List<List<Byte>> txt, UInt32 flags) {
+    public ResolveServiceTuple(int interfaceparam, int protocol, String name, String type, String domain, String host,
+            int aprotocol, String address, UInt16 port, List<List<Byte>> txt, UInt32 flags) {
         this.interfaceparam = interfaceparam;
         this.protocol = protocol;
         this.name = name;
@@ -51,6 +57,7 @@ public class ResolveServiceTuple extends Tuple {
     public int getInterfaceparam() {
         return interfaceparam;
     }
+
     public void setProtocol(int arg) {
         protocol = arg;
     }
@@ -58,6 +65,7 @@ public class ResolveServiceTuple extends Tuple {
     public int getProtocol() {
         return protocol;
     }
+
     public void setName(String arg) {
         name = arg;
     }
@@ -65,6 +73,7 @@ public class ResolveServiceTuple extends Tuple {
     public String getName() {
         return name;
     }
+
     public void setType(String arg) {
         type = arg;
     }
@@ -72,6 +81,7 @@ public class ResolveServiceTuple extends Tuple {
     public String getType() {
         return type;
     }
+
     public void setDomain(String arg) {
         domain = arg;
     }
@@ -79,6 +89,7 @@ public class ResolveServiceTuple extends Tuple {
     public String getDomain() {
         return domain;
     }
+
     public void setHost(String arg) {
         host = arg;
     }
@@ -86,6 +97,7 @@ public class ResolveServiceTuple extends Tuple {
     public String getHost() {
         return host;
     }
+
     public void setAprotocol(int arg) {
         aprotocol = arg;
     }
@@ -93,6 +105,7 @@ public class ResolveServiceTuple extends Tuple {
     public int getAprotocol() {
         return aprotocol;
     }
+
     public void setAddress(String arg) {
         address = arg;
     }
@@ -100,6 +113,7 @@ public class ResolveServiceTuple extends Tuple {
     public String getAddress() {
         return address;
     }
+
     public void setPort(UInt16 arg) {
         port = arg;
     }
@@ -107,6 +121,7 @@ public class ResolveServiceTuple extends Tuple {
     public UInt16 getPort() {
         return port;
     }
+
     public void setTxt(List<List<Byte>> arg) {
         txt = arg;
     }
@@ -114,6 +129,7 @@ public class ResolveServiceTuple extends Tuple {
     public List<List<Byte>> getTxt() {
         return txt;
     }
+
     public void setFlags(UInt32 arg) {
         flags = arg;
     }
@@ -121,6 +137,5 @@ public class ResolveServiceTuple extends Tuple {
     public UInt32 getFlags() {
         return flags;
     }
-
 
 }
