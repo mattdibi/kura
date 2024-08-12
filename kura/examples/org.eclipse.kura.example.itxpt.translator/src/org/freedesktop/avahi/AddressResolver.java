@@ -12,23 +12,23 @@ import org.freedesktop.dbus.types.UInt32;
 @DBusInterfaceName("org.freedesktop.Avahi.AddressResolver")
 public interface AddressResolver extends DBusInterface {
 
-
     public void Free();
-    public void Start();
 
+    public void Start();
 
     public static class Found extends DBusSignal {
 
-        private final int interfaceparam;
+        private final int iface;
         private final int protocol;
         private final int aprotocol;
         private final String address;
         private final String name;
         private final UInt32 flags;
 
-        public Found(String _path, int _interface, int _protocol, int _aprotocol, String _address, String _name, UInt32 _flags) throws DBusException {
+        public Found(String _path, int _interface, int _protocol, int _aprotocol, String _address, String _name,
+                UInt32 _flags) throws DBusException {
             super(_path, _interface, _protocol, _aprotocol, _address, _name, _flags);
-            this.interface = _interface;
+            this.iface = _interface;
             this.protocol = _protocol;
             this.aprotocol = _aprotocol;
             this.address = _address;
@@ -36,31 +36,29 @@ public interface AddressResolver extends DBusInterface {
             this.flags = _flags;
         }
 
-
-        public int getInterfaceparam() {
-            return interfaceparam;
+        public int getIface() {
+            return this.iface;
         }
 
         public int getProtocol() {
-            return protocol;
+            return this.protocol;
         }
 
         public int getAprotocol() {
-            return aprotocol;
+            return this.aprotocol;
         }
 
         public String getAddress() {
-            return address;
+            return this.address;
         }
 
-        public String getName() {
-            return name;
+        public String getAddrName() {
+            return this.name;
         }
 
-        public UInt32 getFlags() {
-            return flags;
+        public UInt32 getAddrFlags() {
+            return this.flags;
         }
-
 
     }
 
@@ -73,11 +71,9 @@ public interface AddressResolver extends DBusInterface {
             this.error = _error;
         }
 
-
         public String getError() {
             return error;
         }
-
 
     }
 }
