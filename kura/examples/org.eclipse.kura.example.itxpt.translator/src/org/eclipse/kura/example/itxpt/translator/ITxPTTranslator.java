@@ -27,6 +27,7 @@ public class ITxPTTranslator {
 
     private EntryGroup entryGroup = null;
     private EntryGroupSignalHandler entryGroupHandler = new EntryGroupSignalHandler();
+    private ServerSignalHandler serverHandler = new ServerSignalHandler();
     private DBusConnection dbusConn = null;
 
     protected void activate(ComponentContext componentContext) {
@@ -46,6 +47,7 @@ public class ITxPTTranslator {
 
             // Add signal handler
             this.dbusConn.addSigHandler(EntryGroup.StateChanged.class, this.entryGroupHandler);
+            this.dbusConn.addSigHandler(Server2.StateChanged.class, this.serverHandler);
 
             // Register a new service
             DBusPath entryGroupPath = server.EntryGroupNew();
@@ -106,6 +108,7 @@ public class ITxPTTranslator {
 
         try {
             this.dbusConn.removeSigHandler(EntryGroup.StateChanged.class, this.entryGroupHandler);
+            this.dbusConn.removeSigHandler(Server2.StateChanged.class, this.serverHandler);
         } catch (DBusException e) {
             s_logger.error("{} sig handler deactivate failed due to: ", APP_ID, e);
         }
