@@ -1,6 +1,5 @@
 package org.eclipse.kura.example.itxpt.translator;
 
-import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,23 +26,31 @@ public class ITxPTTranslator {
     private static final int AVAHI_PROTO_UNSPEC = -1;
 
     private EntryGroup entryGroup = null;
+    private EntryGroupSignalHandler entryGroupHandler = new EntryGroupSignalHandler();
+    private DBusConnection dbusConn = null;
 
     protected void activate(ComponentContext componentContext) {
         s_logger.info("Bundle " + APP_ID + " has started!");
 
-        try (DBusConnection dbusConn = DBusConnection.getConnection(DBusConnection.DEFAULT_SYSTEM_BUS_ADDRESS)) {
+        try {
+            this.dbusConn = DBusConnection.getConnection(DBusConnection.DEFAULT_SYSTEM_BUS_ADDRESS);
+        } catch (DBusException | DBusExecutionException ex) {
+            s_logger.error("{} dbus connection failed due to: ", APP_ID, ex);
+        }
 
+        try {
             // Retrieve Avahi version
-            Server2 server = dbusConn.getRemoteObject("org.freedesktop.Avahi", "/", Server2.class);
+            Server2 server = this.dbusConn.getRemoteObject("org.freedesktop.Avahi", "/", Server2.class);
             String version = server.GetVersionString();
             s_logger.info("Detected Avahi Daemon version: {}", version);
 
+            // Add signal handler
+            this.dbusConn.addSigHandler(EntryGroup.StateChanged.class, this.entryGroupHandler);
+
             // Register a new service
             DBusPath entryGroupPath = server.EntryGroupNew();
-            this.entryGroup = dbusConn.getRemoteObject("org.freedesktop.Avahi", entryGroupPath.getPath(),
+            this.entryGroup = this.dbusConn.getRemoteObject("org.freedesktop.Avahi", entryGroupPath.getPath(),
                     EntryGroup.class);
-
-            Charset charset = Charset.forName("ASCII");
 
             List<String> list = new ArrayList<>();
             list.add("txtvers=1");
@@ -60,6 +67,7 @@ public class ITxPTTranslator {
             list.add("services=inventory");
 
             List<List<Byte>> txt = new ArrayList<>();
+            Charset charset = Charset.forName("ASCII");
             for (String element : list) {
                 txt.add(convertToListOfBytes(element.getBytes(charset)));
             }
@@ -69,8 +77,8 @@ public class ITxPTTranslator {
                     new UInt32(0),                              // flags
                     "RaspberryPi-dc:a6:32:e0:54:f0_inventory",  // name
                     "_itxpt_http._tcp",  // type
-                    "local",             // domain
-                    "raspberrypi.local", // host
+                    "",                  // domain
+                    "",                  // host
                     new UInt16(80),      // port
                     txt                  // txt
             );
@@ -78,7 +86,7 @@ public class ITxPTTranslator {
 
             s_logger.info("Registered DNS service");
 
-        } catch (IOException | DBusException | DBusExecutionException ex) {
+        } catch (DBusException | DBusExecutionException ex) {
             s_logger.error("{} activate failed due to: ", APP_ID, ex);
         }
 
@@ -97,7 +105,13 @@ public class ITxPTTranslator {
         s_logger.info("Bundle " + APP_ID + " has stopped!");
 
         try {
-            this.entryGroup.Free();
+            this.dbusConn.removeSigHandler(EntryGroup.StateChanged.class, this.entryGroupHandler);
+        } catch (DBusException e) {
+            s_logger.error("{} sig handler deactivate failed due to: ", APP_ID, e);
+        }
+
+        try {
+            this.entryGroup.Reset();
         } catch (DBusExecutionException ex) {
             s_logger.error("{} deactivate failed due to: ", APP_ID, ex);
         }
