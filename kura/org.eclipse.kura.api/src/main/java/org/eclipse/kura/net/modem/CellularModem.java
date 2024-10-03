@@ -14,6 +14,7 @@
 package org.eclipse.kura.net.modem;
 
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.kura.KuraException;
 import org.eclipse.kura.comm.CommURI;
@@ -206,6 +207,11 @@ public interface CellularModem {
     public CommURI getSerialConnectionProperties(SerialPortType portType) throws KuraException;
 
     public boolean isGpsSupported() throws KuraException;
+
+    /**
+     * @since 2.8
+     */
+    public Set<ModemGpsMode> getSupportedGpsModes();
 
     public boolean isGpsEnabled();
 
